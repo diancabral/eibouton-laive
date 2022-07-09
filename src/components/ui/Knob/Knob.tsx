@@ -2,16 +2,17 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import * as Styled from './styled';
 
-interface KnobProps {
+type KnobProps = {
   min?: number;
   max?: number;
   value?: number;
   mode?: string;
-  suffix?: string;
   step?: number;
+  format?: (value: number) => string;
+  // children?: React.ReactNode;
 }
 
-export const Knob: React.FC<KnobProps> = ({ min = 0, max = 100, value = 0, mode = 'default', suffix, step = 1 }) => {
+export const Knob = ({ min = 0, max = 100, value = 0, mode = 'default', step = 1, format }: KnobProps) => {
   const [currentValue, setCurrentValue] = useState(value);
   const rotate = useMemo(() => {
     const total = max - min;
@@ -29,23 +30,20 @@ export const Knob: React.FC<KnobProps> = ({ min = 0, max = 100, value = 0, mode 
     setClientYStart(e.clientY);
   };
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = () => {
     if (mouseActive) {
       setMouseActive(false);
       setClientYStart(0);
     }
-  }, [mouseActive]);
+  };
 
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
-      if (mouseActive) {
-        e.preventDefault();
-        const distance = (clientYStart - e.clientY) * step;
-        setCurrentValue(Math.min(Math.max(currentValue + distance, min), max));
-      }
-    },
-    [clientYStart, max, min, mouseActive]
-  );
+  const handleMouseMove = (e: MouseEvent) => {
+    if (mouseActive) {
+      e.preventDefault();
+      const distanceY = (clientYStart - e.clientY) * step;
+      setCurrentValue(Math.min(Math.max(currentValue + distanceY, min), max));
+    }
+  };
 
   useEffect(() => {
     window.addEventListener('mouseup', handleMouseUp);
@@ -59,7 +57,7 @@ export const Knob: React.FC<KnobProps> = ({ min = 0, max = 100, value = 0, mode 
   return (
     <Styled.Container>
       <Styled.Circle $rotate={rotate} $mode={mode} onMouseDown={(e) => handleMouseDown(e)} />
-      <Styled.Output>{currentValue}</Styled.Output>
+      <Styled.Output>{format?.(currentValue) ?? currentValue}</Styled.Output>
     </Styled.Container>
   );
 };

@@ -26,6 +26,7 @@ export const Circle = styled.div.attrs<CircleProps>((props) => ({
   display: flex;
   justify-content: center;
   border: 3px solid black;
+  transition: transform .2s ease;
   &::before {
     content: '';
     width: 3px;
