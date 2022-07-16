@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import * as Styled from './styled';
 
@@ -9,7 +9,6 @@ type KnobProps = {
   mode?: string;
   step?: number;
   format?: (value: number) => string;
-  // children?: React.ReactNode;
 }
 
 export const Knob = ({ min = 0, max = 100, value = 0, mode = 'default', step = 1, format }: KnobProps) => {
@@ -56,7 +55,7 @@ export const Knob = ({ min = 0, max = 100, value = 0, mode = 'default', step = 1
 
   return (
     <Styled.Container>
-      <Styled.Circle $rotate={rotate} $mode={mode} onMouseDown={(e) => handleMouseDown(e)} />
+      <Styled.Circle $rotate={rotate} onMouseDown={(e) => handleMouseDown(e)} />
       <Styled.Output>{format?.(currentValue) ?? currentValue}</Styled.Output>
     </Styled.Container>
   );
