@@ -1,17 +1,26 @@
-import React from 'react';
-// import { Knob } from '../../ui/Knob/Knob';
+import React, { memo, useContext } from 'react';
+import { MIDIContext } from '../MIDIContext/MIDIContext';
 
 import * as Styled from './styled';
 
-export const App = () => {
-  // const formatPanorama = (value: number) => {
-  //   return value === 0 ? 'C' : value < 0 ? `${Math.abs(value)}L` : value > 0 ? `${value}R` : String(value);
-  // }
+export const App = memo(() => {
+
+  const midi = useContext(MIDIContext);
 
   return (
     <Styled.Container>
       <Styled.Row>lalalala</Styled.Row>
-      <Styled.Row>lelele</Styled.Row>
+      <Styled.Row>
+        <>controllers connected: {JSON.stringify(midi.controllers)}</>
+      </Styled.Row>
+      <Styled.Row>
+        <>received midi input: {midi.received}</>
+      </Styled.Row>
+      <Styled.Row>
+        <>messages received: {JSON.stringify(midi.messages)}</>
+      </Styled.Row>
     </Styled.Container>
   );
-};
+});
+
+App.displayName = 'App';

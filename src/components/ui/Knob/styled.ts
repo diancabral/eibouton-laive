@@ -6,7 +6,6 @@ export const Container = styled.div`
   width: fit-content;
   display: flex;
   flex-direction: column;
-  margin-top: 100px;
 `;
 
 interface CircleProps {

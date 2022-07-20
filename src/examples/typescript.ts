@@ -67,21 +67,8 @@ const cadastros = [
 
 const novosUsuarios: CadastrosPossiveis<typeof cadastros> = [
   {
-    email: 'dian.cabral@gmail.com',
-    name: 'Dian Carlos',
-    idade: 34,
-    skills: {
-      javascript: false,
-      react: true,
-      teste: {
-        foo: 'bar'
-      }
-    }
+    idade: 9
   },
-  {
-    email: 'karol.siqueira@gmail.com',
-    name: 'Karolaynne Siqueira'
-  }
 ]
 
 console.log(novosUsuarios);

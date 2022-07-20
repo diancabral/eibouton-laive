@@ -7,17 +7,16 @@ import GlobalCSS from './styled/global';
 import custom from './styled/custom';
 
 import { GlobalTheme } from './components/core/GlobalTheme/GlobalTheme';
-
-// import './examples/typescript';
+import { MIDIProvider } from './components/core/MIDIContext/MIDIContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
-  <React.StrictMode>
     <GlobalTheme theme={custom}>
-      <>
-        <GlobalCSS />
-        <App />
-      </>
+      <MIDIProvider>
+        <React.StrictMode>
+          <GlobalCSS />
+          <App />
+        </React.StrictMode>
+      </MIDIProvider>
     </GlobalTheme>
-  </React.StrictMode>
 );

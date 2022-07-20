@@ -36,6 +36,14 @@ Object.keys(mergedTheme).forEach((value, index) => {
   output += `\n`;
 });
 
+output += `export type MyCustomType = {`;
+Object.keys(mergedTheme).forEach((value, index) => {
+  if(!['spacing', 'colors'].includes(value)) {
+    output += `${value}: GeneratedTheme${pascalCase(value)},`;
+  }
+});
+output += `}`;
+
 fs.outputFile(FILE_OUTPUT, output).then(() => fs.readFile(FILE_OUTPUT, 'utf8')).then(data => {
   console.log('Types file created successfully! ✌🏼😎');
 }).catch(err => {

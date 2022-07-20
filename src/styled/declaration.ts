@@ -1,4 +1,4 @@
-import { MyCustomType } from './custom';
+import { MyCustomType } from './types/generated';
 import { ThemeTypes } from './theme';
 
 declare module 'styled-components' {

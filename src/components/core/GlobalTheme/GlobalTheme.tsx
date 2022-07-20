@@ -4,12 +4,12 @@ import { ThemeProvider } from 'styled-components';
 
 import { theme as defaultTheme, ThemeTypes } from '../../../styled/theme';
 import { CustomThemeType } from '../../../styled/types';
-import { MyCustomType } from '../../../styled/custom';
+import { MyCustomType } from '../../../styled/types/generated';
 import { PartialDeep } from 'type-fest';
 
 type GlobalThemeProps = {
   theme?: CustomThemeType | PartialDeep<MyCustomType>;
-  children?: ReactElement
+  children?: ReactElement | ReactElement[],
 }
 
 export const GlobalTheme = ({ theme = {}, children }: GlobalThemeProps) => {

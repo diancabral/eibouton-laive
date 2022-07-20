@@ -6,8 +6,7 @@ export const Container = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  padding: ${({ theme }) => theme.dian};
-  background-color: ${({ theme }) => theme.colors.amber[500]};
+  padding: ${({ theme }) => theme.spacing.md};
   display: flex;
   flex-direction: column;
 `;
@@ -15,3 +14,5 @@ export const Container = styled.div`
 export const Row = styled.div`
   height: 100%;
 `;
+
+

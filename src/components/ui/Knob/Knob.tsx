@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 
 import * as Styled from './styled';
 
@@ -11,7 +11,7 @@ type KnobProps = {
   format?: (value: number) => string;
 }
 
-export const Knob = ({ min = 0, max = 100, value = 0, mode = 'default', step = 1, format }: KnobProps) => {
+export const Knob = memo(({ min = 0, max = 100, value = 0, mode = 'default', step = 1, format }: KnobProps) => {
   const [currentValue, setCurrentValue] = useState(value);
   const rotate = useMemo(() => {
     const total = max - min;
@@ -59,4 +59,4 @@ export const Knob = ({ min = 0, max = 100, value = 0, mode = 'default', step = 1
       <Styled.Output>{format?.(currentValue) ?? currentValue}</Styled.Output>
     </Styled.Container>
   );
-};
+});
