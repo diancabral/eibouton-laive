@@ -1,5 +1,5 @@
 import React, { memo, ReactElement, useEffect, useMemo, useState } from 'react';
-import { getFrequencyPitchMIDI } from './utils';
+import { getNoteInfo } from './utils';
 import { MIDI_NOTE_OFF, MIDI_NOTE_ON } from './consts';
 import { MIDIControllerType, MIDIMessageType, MIDIProviderType } from './types';
 
@@ -33,21 +33,25 @@ export const MIDIProvider = memo(({ children }: MIDIContextProps) => {
   }
 
   const registerMIDINoteMessage = ([ _, key, velocity ]: any) => {
+    const { frequency, octave, note } = getNoteInfo(key) || {};
     setMessages(current => [...current, {
       key,
-      frequency: getFrequencyPitchMIDI(key),
+      frequency,
       velocity,
+      note,
+      octave,
+      display: `${note}${octave}`
     }]);
   }
 
-  const handleMIDIMessage = ({ data }: any) => {
-    const [ type, key, velocity ] = data;
+  const handleMIDIMessage = (message: any) => {
+    const [ type, key, velocity ] = message.data;
     if (type === MIDI_NOTE_ON && velocity > 0) {
-      registerMIDINoteMessage(data);
+      registerMIDINoteMessage(message.data);
     } else if(type === MIDI_NOTE_OFF || !velocity) {
       removeMIDIMessage(key);
     }
-    setReceived(+new Date);
+    setReceived(+new Date());
   };
 
   useEffect(() => {
