@@ -12,6 +12,7 @@
     "@types/react-dom": "^18.0.6",
     "bootstrap": "^5.2.0-beta1",
     "material-colors": "^1.2.6",
+    "polished": "^4.2.2",
     "ramda": "^0.28.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

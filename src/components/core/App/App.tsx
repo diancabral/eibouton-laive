@@ -1,16 +1,15 @@
-import React, { memo, useContext } from 'react';
+import { memo } from 'react';
+import { Channels } from '../Channels/Channels';
 import { InfoBar } from '../InfoBar/InfoBar';
-// import { MIDIContext } from '../MIDIContext/MIDIContext';
 
 import * as Styled from './styled';
 
 export const App = memo(() => {
-
-  // const midi = useContext(MIDIContext);
-
   return (
     <Styled.Container>
-      <Styled.Row></Styled.Row>
+      <Styled.Row>
+        <Channels />
+      </Styled.Row>
       <Styled.Row style={{
         height: 'fit-content'
       }}>

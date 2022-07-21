@@ -6,7 +6,7 @@ export const Container = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: ${({ theme }) => theme.colors.grey[500]};
+  background: ${({ theme }) => theme.colors.grey[800]};
   padding: ${({ theme }) => `0 ${theme.spacing.sm} ${theme.spacing.sm}`};
   display: flex;
   flex-direction: column;
