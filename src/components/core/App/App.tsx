@@ -1,19 +1,21 @@
 import { memo } from 'react';
-import { Channels } from '../Channels/Channels';
-import { InfoBar } from '../InfoBar/InfoBar';
+import { Mixer } from '../Mixer/Mixer';
+import { Header } from '../Header/Header';
+import { Footer } from '../Footer/Footer';
 
 import * as Styled from './styled';
 
 export const App = memo(() => {
   return (
     <Styled.Container>
-      <Styled.Row>
-        <Channels />
+      <Styled.Row $fit>
+        <Header />
       </Styled.Row>
-      <Styled.Row style={{
-        height: 'fit-content'
-      }}>
-        <InfoBar />
+      <Styled.Row>
+        <Mixer />
+      </Styled.Row>
+      <Styled.Row $fit>
+        <Footer />
       </Styled.Row>
     </Styled.Container>
   );

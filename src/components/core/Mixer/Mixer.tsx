@@ -3,7 +3,7 @@ import { Channel } from './components/Channel/Channel';
 
 import * as Styled from './styled';
 
-export const Channels = memo(() => {
+export const Mixer = memo(() => {
   return (
     <Styled.Container>
       <Styled.Row>
@@ -20,4 +20,4 @@ export const Channels = memo(() => {
   );
 });
 
-Channels.displayName = 'Channels';
+Mixer.displayName = 'Mixer';

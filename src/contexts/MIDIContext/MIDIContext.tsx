@@ -17,6 +17,7 @@ type MIDIContextProps = {
 
 export const MIDIProvider = memo(({ children }: MIDIContextProps) => {
   const [messages, setMessages] = useState<MIDIMessageType[]>([]);
+  const [release, setRelease] = useState(0);
   const [controllers, setControllers] = useState<MIDIControllerType[]>([]);
   const [received, setReceived] = useState(0);
 
@@ -28,11 +29,13 @@ export const MIDIProvider = memo(({ children }: MIDIContextProps) => {
     }]);
   };
 
-  const removeMIDIMessage = (key: number) => {
+  const removeMIDIMessage = async (key: number) => {
     setMessages(current => current.filter((val) => val.key !== key));
+    setRelease(key);
   }
 
   const registerMIDINoteMessage = ([ _, key, velocity ]: any) => {
+    setRelease(0);
     const { frequency, octave, note } = getNoteInfo(key) || {};
     setMessages(current => [...current, {
       key,
@@ -44,7 +47,7 @@ export const MIDIProvider = memo(({ children }: MIDIContextProps) => {
     }]);
   }
 
-  const handleMIDIMessage = (message: any) => {
+  const handleMIDIMessage = async (message: any) => {
     const [ type, key, velocity ] = message.data;
     if (type === MIDI_NOTE_ON && velocity > 0) {
       registerMIDINoteMessage(message.data);
@@ -68,9 +71,10 @@ export const MIDIProvider = memo(({ children }: MIDIContextProps) => {
 
   const providerValue = useMemo(() => ({
     messages,
+    release,
     controllers,
     received,
-  }), [messages, controllers, received]);
+  }), [messages, controllers, received, release]);
 
   return (
     <MIDIContext.Provider value={providerValue}>

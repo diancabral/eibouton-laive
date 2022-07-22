@@ -12,7 +12,9 @@ export const Container = styled.div`
   flex-direction: column;
 `;
 
-export const Row = styled.div`
+export const Row = styled.div<{
+  $fit?: boolean
+}>`
   margin-top: ${({ theme }) => theme.spacing.sm};
-  height: 100%;
+  height: ${({ $fit }) => !$fit ? '100%' : 'fit-content'};
 `;

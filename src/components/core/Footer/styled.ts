@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
+  height: 23px;
   padding: 2px ${({ theme }) => theme.spacing.xs};
   background: ${({ theme }) => theme.colors.containers.background};
   border: 3px solid ${({ theme }) => theme.colors.containers.borderLight};

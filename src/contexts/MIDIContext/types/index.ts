@@ -15,6 +15,7 @@ export type MIDIMessageType = {
 
 export type MIDIProviderType = {
   messages?: MIDIMessageType[] | null
+  release?: number
   controllers?: MIDIControllerType[] | null
   received?: number
 }

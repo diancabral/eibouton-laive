@@ -6,17 +6,20 @@ import { App } from './components/core/App/App';
 import GlobalCSS from './styled/global';
 import custom from './styled/custom';
 
-import { GlobalTheme } from './components/core/GlobalTheme/GlobalTheme';
-import { MIDIProvider } from './components/core/MIDIContext/MIDIContext';
+import { GlobalTheme } from './contexts/GlobalTheme/GlobalTheme';
+import { MIDIProvider } from './contexts/MIDIContext/MIDIContext';
+import { AudioProvider } from './contexts/AudioContext/AudioContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
     <GlobalTheme theme={custom}>
       <MIDIProvider>
-        <React.StrictMode>
-          <GlobalCSS />
-          <App />
-        </React.StrictMode>
+        <AudioProvider>
+          {/* <React.StrictMode> */}
+            <GlobalCSS />
+            <App />
+          {/* </React.StrictMode> */}
+        </AudioProvider>
       </MIDIProvider>
     </GlobalTheme>
 );
