@@ -29,7 +29,7 @@ export const Mixer = memo(() => {
 
   const addChannel = async () => {
     const uuid = uuidv4();
-    const newChannel = structuredClone(ChannelModel) as ChannelMetadata;
+    const newChannel = structuredClone(ChannelModel);
     updateChannels((current) => ([
       ...current,
       {

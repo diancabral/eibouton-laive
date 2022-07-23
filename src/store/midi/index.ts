@@ -1,5 +1,5 @@
-import { atom, PrimitiveAtom } from 'jotai';
-import { ChannelMetadata, ChannelType } from '../channels/types';
+import { atom } from 'jotai';
+import { ChannelType } from '../channels/types';
 import { MIDIControllerType, MIDINoteType } from './types';
 
 export const MIDINotesOn = atom<MIDINoteType[]>([]);

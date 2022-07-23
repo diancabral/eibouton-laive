@@ -3,7 +3,7 @@ import { useAtomValue, useUpdateAtom } from 'jotai/utils';
 import { getNoteInfo } from './utils';
 import { MIDI_NOTE_OFF, MIDI_NOTE_ON } from './consts';
 import { MIDIControllers, MIDIInput, MIDINotesOff, MIDINotesOn, MIDIReceived } from '../../store/midi';
-import { ChannelType } from '../../store/channels/types';
+import { ChannelMetadata, ChannelType } from '../../store/channels/types';
 
 //
 
@@ -33,6 +33,8 @@ const ListenMIDIInput = () => {
 export const MIDIProvider = ({ children }: {
   children?: ReactElement | ReactElement[]
 }) => {
+  const getCurrentChannel = useAtomValue(MIDIInput);
+
   const updateControllers = useUpdateAtom(MIDIControllers);
   const updateMIDIReceived = useUpdateAtom(MIDIReceived);
   const updateMIDINotesOn = useUpdateAtom(MIDINotesOn);
@@ -90,7 +92,7 @@ export const MIDIProvider = ({ children }: {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (<>
-    <ListenMIDIInput />
+    {getCurrentChannel && <ListenMIDIInput />}
     ${children}
   </>);
 };
