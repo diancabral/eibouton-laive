@@ -1,5 +1,5 @@
 export const TYPES_TITLES = {
-  AU: 'Audio',
-  MI: 'MIDI',
-  MA: 'Master'
+  audio: 'Audio',
+  midi: 'MIDI',
+  master: 'Master'
 }

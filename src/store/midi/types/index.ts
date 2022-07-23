@@ -4,18 +4,11 @@ export type MIDIControllerType = {
   manufacturer?: string
 }
 
-export type MIDIMessageType = {
+export type MIDINoteType = {
   key?: number | null
   octave?: number | null
   frequency?: number | null
   note?: string | null
   velocity?: number | null
   display?: string | null
-}
-
-export type MIDIProviderType = {
-  messages?: MIDIMessageType[] | null
-  release?: number
-  controllers?: MIDIControllerType[] | null
-  received?: number
 }

@@ -1,11 +1,11 @@
-import { useContext } from 'react';
-import { MIDIContext } from '../../../../../contexts/MIDIContext/MIDIContext';
+import { useAtom } from 'jotai';
+import { MIDIReceived } from '../../../../../store/midi';
 
 import * as Styled from './styled'
 
 const MIDIInIndicator = () => {
-  const midi = useContext(MIDIContext);
-  return <Styled.Indicator key={midi.received} />
+  const [received] = useAtom(MIDIReceived);
+  return <Styled.Indicator key={received} />
 }
 
 const MIDIOutIndicator = () => <Styled.Indicator />

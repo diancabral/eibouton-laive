@@ -1,12 +1,12 @@
-import { useContext } from 'react';
-import { MIDIContext } from '../../../contexts/MIDIContext/MIDIContext';
+import { useAtom } from 'jotai';
+import { MIDINotesOn } from '../../../store/midi';
 
 import * as Styled from './styled';
 
 const MidiNoteIndicator = () => {
-  const midi = useContext(MIDIContext);
-  return !!midi.messages?.length ? (
-    <>MIDI Note: {midi.messages.map((val) => val.display).slice(-1)}</>
+  const [notes] = useAtom(MIDINotesOn);
+  return !!notes.length ? (
+    <>MIDI Note: {notes.map((val) => val.display).slice(-1)}</>
   ) : <></>;
 }
 

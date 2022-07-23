@@ -1,25 +1,18 @@
-import React, { memo, ReactElement, useEffect, useMemo, useState } from 'react';
+import { ReactElement, useEffect } from 'react';
+import { useAtom } from 'jotai';
 import { getNoteInfo } from './utils';
 import { MIDI_NOTE_OFF, MIDI_NOTE_ON } from './consts';
-import { MIDIControllerType, MIDIMessageType, MIDIProviderType } from './types';
+import { MIDIControllers, MIDINotesOff, MIDINotesOn, MIDIReceived } from '../../store/midi';
 
 //
 
-export const MIDIContext = React.createContext<MIDIProviderType>({});
-
-MIDIContext.displayName = 'MIDIContext';
-
-//
-
-type MIDIContextProps = {
+export const MIDIProvider = ({ children }: {
   children?: ReactElement | ReactElement[]
-}
-
-export const MIDIProvider = memo(({ children }: MIDIContextProps) => {
-  const [messages, setMessages] = useState<MIDIMessageType[]>([]);
-  const [release, setRelease] = useState(0);
-  const [controllers, setControllers] = useState<MIDIControllerType[]>([]);
-  const [received, setReceived] = useState(0);
+}) => {
+  const [, setNotesOn] = useAtom(MIDINotesOn);
+  const [, setNotesOff] = useAtom(MIDINotesOff);
+  const [, setControllers] = useAtom(MIDIControllers);
+  const [, setMIDIReceived] = useAtom(MIDIReceived);
 
   const registerMIDIController = (controller: MIDIInput) => {
     setControllers(current => [...current, {
@@ -30,14 +23,14 @@ export const MIDIProvider = memo(({ children }: MIDIContextProps) => {
   };
 
   const removeMIDIMessage = async (key: number) => {
-    setMessages(current => current.filter((val) => val.key !== key));
-    setRelease(key);
+    setNotesOn(current => current.filter((val) => val.key !== key));
+    setNotesOff(key);
   }
 
   const registerMIDINoteMessage = ([ _, key, velocity ]: any) => {
-    setRelease(0);
+    setNotesOff(0);
     const { frequency, octave, note } = getNoteInfo(key) || {};
-    setMessages(current => [...current, {
+    setNotesOn(current => [...current, {
       key,
       frequency,
       velocity,
@@ -47,14 +40,14 @@ export const MIDIProvider = memo(({ children }: MIDIContextProps) => {
     }]);
   }
 
-  const handleMIDIMessage = async (message: any) => {
+  const handleMIDIMessage = (message: any) => {
     const [ type, key, velocity ] = message.data;
     if (type === MIDI_NOTE_ON && velocity > 0) {
       registerMIDINoteMessage(message.data);
-    } else if(type === MIDI_NOTE_OFF || !velocity) {
+    } else if(type === MIDI_NOTE_OFF) {
       removeMIDIMessage(key);
     }
-    setReceived(+new Date());
+    setMIDIReceived(+new Date());
   };
 
   useEffect(() => {
@@ -68,19 +61,5 @@ export const MIDIProvider = memo(({ children }: MIDIContextProps) => {
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const providerValue = useMemo(() => ({
-    messages,
-    release,
-    controllers,
-    received,
-  }), [messages, controllers, received, release]);
-
-  return (
-    <MIDIContext.Provider value={providerValue}>
-      {children}
-    </MIDIContext.Provider>
-  )
-});
-
-MIDIProvider.displayName = 'MIDIProvider';
+  return (<>${children}</>);
+};
