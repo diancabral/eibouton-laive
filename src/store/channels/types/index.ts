@@ -1,46 +1,54 @@
-import { ReactElement } from 'react'
-import Oscillator from '../../../web-audio/Oscillator'
+import { ReactElement } from 'react';
+import { PrimitiveAtom } from 'jotai';
+import Oscillator from '../../../web-audio/Oscillator';
+import { MIDIInputType } from '../../midi/types';
 
 export type ChannelTrackType = 'midi' | 'audio' | 'master';
 
 export type ChannelDevice = {
-  component: ReactElement | null,
-  node?: Oscillator | null
-  config?: null
-}
+  component?: ReactElement | null;
+  node?: Oscillator | null;
+  config?: null;
+};
 
-export type ChannelMIDI = {
-  title?: string
-  color?: string
+export type ChannelMIDIMessages = {
+  title?: string;
+  color?: string;
   start: {
-    bar: number
-    beat: number
-    sixteenth: number
-  }
-  length: number
-}
+    bar: number;
+    beat: number;
+    sixteenth: number;
+  };
+  length: number;
+};
 
 export type ChannelMetadata = {
-  /** Unique id */
-  uuid?: string,
   /** Set channel to MIDI, Audio or Master output */
-  type: ChannelTrackType
+  type: ChannelTrackType;
   /** Title of channel */
-  title?: string
+  title?: string;
   /** Header background color */
-  color?: string
+  color?: string;
   /** Audio device connected to channel */
-  device: ChannelDevice
+  device: ChannelDevice;
   /** MIDI metadata to send to an audio device and to the arrangement screen */
-  midi?: ChannelMIDI[]
+  midi: {
+    input: MIDIInputType
+    messages?: ChannelMIDIMessages[]
+  };
   /** Channel Volume */
-  gain?: number
+  gain?: number;
   /** Channel Panorama */
-  pan?: number
+  pan?: number;
   /** Arms channel to receive MIDI messages */
-  arm?: boolean
+  arm?: boolean;
   /** Activate and deactivate channel audio output */
-  active?: boolean
+  active?: boolean;
   /** Solo channel to listen audio output regardless */
-  solo?: boolean
-}
+  solo?: boolean;
+};
+
+export type ChannelType = {
+  uuid: string;
+  channel: PrimitiveAtom<ChannelMetadata>;
+};

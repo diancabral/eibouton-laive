@@ -1,6 +1,6 @@
 /**
  * Theme Types
- * Generated in Fri Jul 22 2022 17:31:47 GMT-0300 (Horário Padrão de Brasília)
+ * Generated in Sat Jul 23 2022 09:14:34 GMT-0300 (Horário Padrão de Brasília)
  *
  * This file is generated automatically, DO NOT modify it directly
  * To create new or modify existing styles, edit custom.ts or variables.ts files inside .src/styled/

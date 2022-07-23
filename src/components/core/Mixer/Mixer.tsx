@@ -1,37 +1,43 @@
-import { useAtom } from 'jotai';
-import { v4 as uuidv4 } from 'uuid';
 import { memo } from 'react';
+import { atom, useAtom } from 'jotai';
+import { useUpdateAtom } from 'jotai/utils';
+import { v4 as uuidv4 } from 'uuid';
 import { Channels } from '../../../store/channels';
-import { ChannelMasterModel, ChannelModel } from '../../../store/channels/models';
+import { ChannelMIDIInputModel, ChannelModel } from '../../../store/channels/models';
 import { Channel } from './components/Channel/Channel';
 
 import * as Styled from './styled';
 import { ChannelMetadata } from '../../../store/channels/types';
-import { Merus } from '../../../devices/Merus/Merus';
 
 const MixerChannels = () => {
   const [channels] = useAtom(Channels);
-  return <>{
-    channels.map((val, index) => (
-    <Styled.Column key={val.uuid}>
-      <Channel data={val} index={index} />
-    </Styled.Column>
-  ))}</>
+  return (
+    <>
+      {channels.map((val, index) => {
+        return (
+          <Styled.Column key={val.uuid}>
+            <Channel data={val} index={index} uuid={val.uuid} />
+          </Styled.Column>
+        );
+      })}
+    </>
+  );
 };
 
-const master = ChannelMasterModel;
-
 export const Mixer = memo(() => {
-  const [, setChannels] = useAtom(Channels);
+  const updateChannels = useUpdateAtom(Channels);
 
-  const addChannel = () => {
-    setChannels(current => {
-      let newChannel: ChannelMetadata = structuredClone(ChannelModel);
-      newChannel.uuid = uuidv4();
-      newChannel.device.component = <Merus />;
-      return [...current, newChannel]
-    });
-  }
+  const addChannel = async () => {
+    const uuid = uuidv4();
+    const newChannel = structuredClone(ChannelModel) as ChannelMetadata;
+    updateChannels((current) => ([
+      ...current,
+      {
+        uuid,
+        channel: atom(newChannel),
+      },
+    ]));
+  };
 
   return (
     <Styled.Container>
@@ -40,9 +46,7 @@ export const Mixer = memo(() => {
         <MixerChannels />
       </Styled.Row>
       <Styled.Row $fixed>
-        <Styled.Column $fixed>
-          <Channel data={master} />
-        </Styled.Column>
+        <Styled.Column $fixed>{/* <Channel data={master} /> */}</Styled.Column>
       </Styled.Row>
     </Styled.Container>
   );

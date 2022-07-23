@@ -1,18 +1,26 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useAtom } from 'jotai';
 import { AudioContext } from '../../contexts/AudioContext/AudioContext';
-import { MIDINotesOff, MIDINotesOn } from '../../store/midi';
 import Oscillator from '../../web-audio/Oscillator';
+import { ChannelType } from '../../store/channels/types';
 
-export const Merus = () => {
-  const [notes] = useAtom(MIDINotesOn);
-  const [release] = useAtom(MIDINotesOff);
+type MerusType = {
+  data: ChannelType;
+  type: OscillatorType;
+}
+
+export const Merus = ({ data, type }: MerusType) => {
   const audio = useContext(AudioContext);
+
+  const [channel] = useAtom(data.channel);
+
+  const notes = useMemo(() => channel.midi.input, [channel.midi.input]);
 
   const [, setCurrentOscillators] = useState<{
     oscillators: Oscillator[],
     key: number,
   }[]>([]);
+
   const [lastKey, setLastKey] = useState(0);
 
   const stopOscillator = (key: number) => {
@@ -29,19 +37,19 @@ export const Merus = () => {
   }
 
   const monophonic = true;
-  const portamento = .005;
+  const portamento = .05;
   const voices = 1;
   // const detune = 0;
 
   useEffect(() => {
-    if (notes.length) {
+    if (notes.notesOn.length) {
       for (let i = 0; i < voices; i++) {
         const oscillator = new Oscillator(audio.context);
 
-        oscillator.wave = 'sawtooth';
+        oscillator.wave = type;
         // oscillator.fine = 0 + oscillator.calcDetuneFine(i, voices, detune);
 
-        const key = notes.map((val) => val.key).slice(-1)[0] || 0;
+        const key = notes.notesOn.map((val) => val.key).slice(-1)[0] || 0;
         oscillator.setKey(key, lastKey, portamento);
 
         if (voices === 1) stopOscillator(key);
@@ -64,11 +72,11 @@ export const Merus = () => {
         oscillator.play();
       }
     }
-  }, [notes]);
+  }, [notes.notesOn]);
 
   useEffect(() => {
-    stopOscillator(release as number);
-  }, [release]);
+    stopOscillator(notes.notesOff);
+  }, [notes.notesOff]);
 
   //
 

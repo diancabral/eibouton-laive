@@ -13,15 +13,15 @@ import { ChannelsContext } from './contexts/ChannelsContext/ChannelsContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
-    <GlobalTheme theme={custom}>
-      <MIDIProvider>
-        <AudioProvider>
-            {/* <React.StrictMode> */}
-              <ChannelsContext />
-              <GlobalCSS />
-              <App />
-            {/* </React.StrictMode> */}
-        </AudioProvider>
-      </MIDIProvider>
-    </GlobalTheme>
+<GlobalTheme theme={custom}>
+  <MIDIProvider>
+    <AudioProvider>
+    {/* <React.StrictMode> */}
+      <ChannelsContext />
+      <GlobalCSS />
+      <App />
+    {/* </React.StrictMode> */}
+    </AudioProvider>
+  </MIDIProvider>
+</GlobalTheme>
 );

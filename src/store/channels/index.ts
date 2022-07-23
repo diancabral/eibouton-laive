@@ -1,4 +1,4 @@
 import { atom } from 'jotai';
-import { ChannelMetadata } from './types';
+import { ChannelType } from './types';
 
-export const Channels = atom<ChannelMetadata[]>([]);
+export const Channels = atom<ChannelType[]>([]);

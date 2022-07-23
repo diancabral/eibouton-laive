@@ -12,3 +12,8 @@ export type MIDINoteType = {
   velocity?: number | null
   display?: string | null
 }
+
+export type MIDIInputType = {
+  notesOn: MIDINoteType[];
+  notesOff: number;
+};

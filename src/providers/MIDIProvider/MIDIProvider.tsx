@@ -1,21 +1,49 @@
 import { ReactElement, useEffect } from 'react';
-import { useAtom } from 'jotai';
+import { useAtomValue, useUpdateAtom } from 'jotai/utils';
 import { getNoteInfo } from './utils';
 import { MIDI_NOTE_OFF, MIDI_NOTE_ON } from './consts';
-import { MIDIControllers, MIDINotesOff, MIDINotesOn, MIDIReceived } from '../../store/midi';
+import { MIDIControllers, MIDIInput, MIDINotesOff, MIDINotesOn, MIDIReceived } from '../../store/midi';
+import { ChannelType } from '../../store/channels/types';
 
 //
+
+const ListenMIDIInput = () => {
+  const getCurrentChannel = useAtomValue(MIDIInput) as ChannelType;
+  const setChannelOptions = useUpdateAtom(getCurrentChannel.channel);
+  const getMIDINotesOn = useAtomValue(MIDINotesOn);
+  const getMIDINotesOff = useAtomValue(MIDINotesOff);
+
+  useEffect(() => {
+    setChannelOptions(current => ({
+      ...current,
+      midi: {
+        ...current.midi,
+        input: {
+          notesOn: getMIDINotesOn,
+          notesOff: getMIDINotesOff
+        }
+      }
+    }));
+    console.log(getMIDINotesOn, getCurrentChannel);
+  }, [getMIDINotesOn, getMIDINotesOff, setChannelOptions, getCurrentChannel]);
+
+  return <></>;
+}
 
 export const MIDIProvider = ({ children }: {
   children?: ReactElement | ReactElement[]
 }) => {
-  const [, setNotesOn] = useAtom(MIDINotesOn);
-  const [, setNotesOff] = useAtom(MIDINotesOff);
-  const [, setControllers] = useAtom(MIDIControllers);
-  const [, setMIDIReceived] = useAtom(MIDIReceived);
+  const updateControllers = useUpdateAtom(MIDIControllers);
+  const updateMIDIReceived = useUpdateAtom(MIDIReceived);
+  const updateMIDINotesOn = useUpdateAtom(MIDINotesOn);
+  const updateMIDINotesOf = useUpdateAtom(MIDINotesOff);
+
+  useEffect(() => {
+
+  });
 
   const registerMIDIController = (controller: MIDIInput) => {
-    setControllers(current => [...current, {
+    updateControllers(current => [...current, {
       id: controller.id,
       name: controller.name ?? '',
       manufacturer: controller.manufacturer ?? ''
@@ -23,14 +51,14 @@ export const MIDIProvider = ({ children }: {
   };
 
   const removeMIDIMessage = async (key: number) => {
-    setNotesOn(current => current.filter((val) => val.key !== key));
-    setNotesOff(key);
+    updateMIDINotesOf(key);
+    updateMIDINotesOn(current => current.filter((val) => val.key !== key));
   }
 
   const registerMIDINoteMessage = ([ _, key, velocity ]: any) => {
-    setNotesOff(0);
     const { frequency, octave, note } = getNoteInfo(key) || {};
-    setNotesOn(current => [...current, {
+    updateMIDINotesOf(0);
+    updateMIDINotesOn(current => [...current, {
       key,
       frequency,
       velocity,
@@ -47,7 +75,7 @@ export const MIDIProvider = ({ children }: {
     } else if(type === MIDI_NOTE_OFF) {
       removeMIDIMessage(key);
     }
-    setMIDIReceived(+new Date());
+    updateMIDIReceived(+new Date());
   };
 
   useEffect(() => {
@@ -61,5 +89,8 @@ export const MIDIProvider = ({ children }: {
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return (<>${children}</>);
+  return (<>
+    <ListenMIDIInput />
+    ${children}
+  </>);
 };
