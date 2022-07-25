@@ -7,18 +7,14 @@ import { GlobalTheme } from './styled/components/GlobalTheme/GlobalTheme';
 import GlobalCSS from './styled/global';
 import custom from './styled/custom';
 
-import { AudioProvider } from './contexts/AudioContext/AudioContext';
-
 //
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
 <GlobalTheme theme={custom}>
-  <AudioProvider>
   {/* <React.StrictMode> */}
     <GlobalCSS />
     <App />
   {/* </React.StrictMode> */}
-  </AudioProvider>
 </GlobalTheme>
 );

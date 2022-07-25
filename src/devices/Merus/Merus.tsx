@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState } from 'react';
-import { AudioContext } from '../../contexts/AudioContext/AudioContext';
+import { useEffect, useState } from 'react';
 import Oscillator from '../../web-audio/Oscillator';
 import { ChannelType } from '../../store/channels/types';
 import { useGetMIDIMessages } from './hooks/useGetMIDIMessages';
+import { useGetAudioGlobal } from '../../store/audio/hooks/useGetAudioGlobal';
 
 type MerusType = {
   data: ChannelType;
@@ -10,8 +10,7 @@ type MerusType = {
 }
 
 export const Merus = ({ data, type }: MerusType) => {
-  const audio = useContext(AudioContext);
-
+  const { context, master } = useGetAudioGlobal();
   const { midi } = useGetMIDIMessages(data);
 
   const [, setCurrentOscillators] = useState<{
@@ -49,7 +48,7 @@ export const Merus = ({ data, type }: MerusType) => {
   useEffect(() => {
     if (midi.notesOn.length) {
       for (let i = 0; i < voices; i++) {
-        const oscillator = new Oscillator(audio.context);
+        const oscillator = new Oscillator(context as AudioContext);
 
         oscillator.wave = type;
         // oscillator.fine = 0 + oscillator.calcDetuneFine(i, voices, detune);
@@ -73,7 +72,7 @@ export const Merus = ({ data, type }: MerusType) => {
         });
         setLastKey(key);
 
-        oscillator.connectTo(audio.master);
+        oscillator.connectTo(master as GainNode);
         oscillator.play();
       }
     } else {

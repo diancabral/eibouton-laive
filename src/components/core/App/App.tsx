@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { memo } from 'react';
 import { Mixer } from '../Mixer/Mixer';
 import { Header } from '../Header/Header';
 import { Footer } from '../Footer/Footer';
@@ -6,19 +6,11 @@ import { Footer } from '../Footer/Footer';
 import * as Styled from './styled';
 
 import { MIDIProvider } from '../../../providers/MIDIProvider/MIDIProvider';
-import { useUpdateChannels } from '../../../store/channels/hooks/useUpdateChannels';
+import { AudioProvider } from '../../../providers/AudioProvider/AudioProvider';
 
 export const App = memo(() => {
-  const [ready, setReady] = useState(false);
-
-  const { createChannel } = useUpdateChannels();
-
-  useEffect(() => {
-    createChannel();
-    setReady(true);
-  }, []);
-
-  return ready ? (<>
+  return <>
+    <AudioProvider />
     <MIDIProvider />
     <Styled.Container>
       <Styled.Row $fit>
@@ -31,7 +23,7 @@ export const App = memo(() => {
         <Footer />
       </Styled.Row>
     </Styled.Container>
-  </>) : <></>;
+  </>;
 });
 
 App.displayName = 'App';
