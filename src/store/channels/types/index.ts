@@ -23,12 +23,14 @@ export type ChannelMIDIMessages = {
 };
 
 export type ChannelMetadata = {
-  /** Set channel to MIDI, Audio or Master output */
-  type: ChannelTrackType;
-  /** Title of channel */
-  title?: string;
-  /** Header background color */
-  color?: string;
+  metadata: {
+    /** Set channel to MIDI, Audio or Master output */
+    type: ChannelTrackType;
+    /** Title of channel */
+    title?: string;
+    /** Header background color */
+    color?: string;
+  };
   /** Audio device connected to channel */
   device: ChannelDevice;
   /** MIDI metadata to send to an audio device and to the arrangement screen */
@@ -36,16 +38,18 @@ export type ChannelMetadata = {
     input: MIDIInputType
     messages?: ChannelMIDIMessages[]
   };
-  /** Channel Volume */
-  gain?: number;
-  /** Channel Panorama */
-  pan?: number;
-  /** Arms channel to receive MIDI messages */
-  arm?: boolean;
-  /** Activate and deactivate channel audio output */
-  active?: boolean;
-  /** Solo channel to listen audio output regardless */
-  solo?: boolean;
+  mixer : {
+    /** Channel Volume */
+    gain?: number;
+    /** Channel Panorama */
+    pan?: number;
+    /** Arms channel to receive MIDI messages */
+    arm?: boolean;
+    /** Activate and deactivate channel audio output */
+    active?: boolean;
+    /** Solo channel to listen audio output regardless */
+    solo?: boolean;
+  }
 };
 
 export type ChannelType = {

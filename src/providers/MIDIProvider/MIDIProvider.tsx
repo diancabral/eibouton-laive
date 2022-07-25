@@ -1,40 +1,13 @@
-import { ReactElement, useEffect } from 'react';
-import { useAtomValue, useUpdateAtom } from 'jotai/utils';
+import { useEffect } from 'react';
+import { useUpdateAtom } from 'jotai/utils';
 import { getNoteInfo } from './utils';
+import { MIDIControllers, MIDINotesOff, MIDINotesOn, MIDIReceived } from '../../store/midi';
 import { MIDI_NOTE_OFF, MIDI_NOTE_ON } from './consts';
-import { MIDIControllers, MIDIInput, MIDINotesOff, MIDINotesOn, MIDIReceived } from '../../store/midi';
-import { ChannelMetadata, ChannelType } from '../../store/channels/types';
+import { MIDIBridge } from './MIDIBridge';
 
 //
 
-const ListenMIDIInput = () => {
-  const getCurrentChannel = useAtomValue(MIDIInput) as ChannelType;
-  const setChannelOptions = useUpdateAtom(getCurrentChannel.channel);
-  const getMIDINotesOn = useAtomValue(MIDINotesOn);
-  const getMIDINotesOff = useAtomValue(MIDINotesOff);
-
-  useEffect(() => {
-    setChannelOptions(current => ({
-      ...current,
-      midi: {
-        ...current.midi,
-        input: {
-          notesOn: getMIDINotesOn,
-          notesOff: getMIDINotesOff
-        }
-      }
-    }));
-    console.log(getMIDINotesOn, getCurrentChannel);
-  }, [getMIDINotesOn, getMIDINotesOff, setChannelOptions, getCurrentChannel]);
-
-  return <></>;
-}
-
-export const MIDIProvider = ({ children }: {
-  children?: ReactElement | ReactElement[]
-}) => {
-  const getCurrentChannel = useAtomValue(MIDIInput);
-
+export const MIDIProvider = () => {
   const updateControllers = useUpdateAtom(MIDIControllers);
   const updateMIDIReceived = useUpdateAtom(MIDIReceived);
   const updateMIDINotesOn = useUpdateAtom(MIDINotesOn);
@@ -91,8 +64,6 @@ export const MIDIProvider = ({ children }: {
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return (<>
-    {getCurrentChannel && <ListenMIDIInput />}
-    ${children}
-  </>);
+
+  return <MIDIBridge />;
 };

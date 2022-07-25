@@ -7,8 +7,10 @@ export const ChannelMIDIInputModel: MIDIInputType = {
 }
 
 export const ChannelModel: ChannelMetadata = {
-  type: 'midi',
-  title: '',
+  metadata: {
+    type: 'midi',
+    title: '',
+  },
   device: {
     node: null,
     config: null,
@@ -28,16 +30,22 @@ export const ChannelModel: ChannelMetadata = {
       },
     ],
   },
-  active: true,
-  solo: false,
-  arm: false,
-  gain: 0,
-  pan: 0,
+  mixer: {
+    active: true,
+    solo: false,
+    arm: true,
+    gain: 0,
+    pan: 0,
+  }
 };
 
 export const ChannelMasterModel: Omit<ChannelMetadata, 'device' | 'midi'> = {
-  type: 'master',
-  title: 'Master',
-  gain: 0,
-  pan: 0,
+  metadata: {
+    type: 'master',
+    title: 'Master',
+  },
+  mixer: {
+    gain: 0,
+    pan: 0,
+  }
 };

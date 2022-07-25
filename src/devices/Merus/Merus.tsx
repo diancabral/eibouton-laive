@@ -1,8 +1,9 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { AudioContext } from '../../contexts/AudioContext/AudioContext';
 import Oscillator from '../../web-audio/Oscillator';
 import { ChannelType } from '../../store/channels/types';
+import { selectAtom } from 'jotai/utils';
 
 type MerusType = {
   data: ChannelType;
@@ -12,9 +13,7 @@ type MerusType = {
 export const Merus = ({ data, type }: MerusType) => {
   const audio = useContext(AudioContext);
 
-  const [channel] = useAtom(data.channel);
-
-  const notes = useMemo(() => channel.midi.input, [channel.midi.input]);
+  const midi = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.midi.input), []));
 
   const [, setCurrentOscillators] = useState<{
     oscillators: Oscillator[],
@@ -36,20 +35,27 @@ export const Merus = ({ data, type }: MerusType) => {
     });
   }
 
+  const stopAllOscillators = () => {
+    setCurrentOscillators(current => {
+      current.forEach(({ oscillators }) => oscillators.forEach((oscilattor) => oscilattor.stop()));
+      return current;
+    });
+  }
+
   const monophonic = true;
   const portamento = .05;
   const voices = 1;
   // const detune = 0;
 
   useEffect(() => {
-    if (notes.notesOn.length) {
+    if (midi.notesOn.length) {
       for (let i = 0; i < voices; i++) {
         const oscillator = new Oscillator(audio.context);
 
         oscillator.wave = type;
         // oscillator.fine = 0 + oscillator.calcDetuneFine(i, voices, detune);
 
-        const key = notes.notesOn.map((val) => val.key).slice(-1)[0] || 0;
+        const key = midi.notesOn.map((val) => val.key).slice(-1)[0] || 0;
         oscillator.setKey(key, lastKey, portamento);
 
         if (voices === 1) stopOscillator(key);
@@ -71,12 +77,14 @@ export const Merus = ({ data, type }: MerusType) => {
         oscillator.connectTo(audio.master);
         oscillator.play();
       }
+    } else {
+      stopAllOscillators();
     }
-  }, [notes.notesOn]);
+  }, [midi.notesOn]);
 
   useEffect(() => {
-    stopOscillator(notes.notesOff);
-  }, [notes.notesOff]);
+    stopOscillator(midi.notesOff);
+  }, [midi.notesOff]);
 
   //
 

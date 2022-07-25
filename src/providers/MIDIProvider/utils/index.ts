@@ -1,5 +1,7 @@
 import { MIDI_GLOBAL_TUNNING, MIDI_NOTES_NAMES } from '../consts';
 
+//
+
 export const getFrequencyByNoteKey = (key: number) => MIDI_GLOBAL_TUNNING * (2 ** ((key - 69) / 12));
 
 export const getNotesMIDIKeys = MIDI_NOTES_NAMES.map((note, index) => ({
@@ -16,3 +18,20 @@ export const getNoteInfo = (key: number) => {
     octave
   };
 };
+
+//
+
+export const clearMIDINotes = (current: any) => ({
+  ...current,
+  midi: {
+    ...current.midi,
+    input: {
+      notesOn: [],
+      notesOff: 0
+    }
+  },
+  mixer: {
+    ...current.mixer,
+    arm: false,
+  }
+});

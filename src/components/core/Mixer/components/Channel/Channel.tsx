@@ -1,12 +1,14 @@
-import { memo } from 'react';
-import { PrimitiveAtom, useAtom } from 'jotai';
+import { memo, useMemo } from 'react';
+import { useAtom, useAtomValue } from 'jotai';
 import { Merus } from '../../../../../devices/Merus/Merus';
-import { ChannelMetadata, ChannelTrackType, ChannelType } from '../../../../../store/channels/types';
+import { ChannelTrackType, ChannelType } from '../../../../../store/channels/types';
 import { TYPES_TITLES } from './consts';
 
+import { selectAtom, useUpdateAtom } from 'jotai/utils';
+import { clearMIDINotes } from '../../../../../providers/MIDIProvider/utils';
+import { CurrentChannel } from '../../../../../store/channels';
+
 import * as Styled from './styled';
-import { useUpdateAtom } from 'jotai/utils';
-import { MIDIInput } from '../../../../../store/midi';
 
 //
 
@@ -17,7 +19,7 @@ type ChannelTitleProps = {
   index?: number
 }
 
-const ChannelTitle = ({
+const ChannelTitle = memo(({
   isMaster,
   type,
   title,
@@ -25,52 +27,72 @@ const ChannelTitle = ({
 }: ChannelTitleProps) => {
   return isMaster ?
     <Styled.Title>{TYPES_TITLES['master']}</Styled.Title> :
-    <Styled.Title>{`${index + 1} ${title || TYPES_TITLES[type]}`}</Styled.Title>;
-};
+    <Styled.Title>{`${!title ? (index + 1) : ''} ${title || TYPES_TITLES[type]}`}</Styled.Title>;
+});
+
+ChannelTitle.displayName = 'Channel Title';
 
 //
 
 type ChannelProps = {
   index?: number
-  uuid: string
   data: ChannelType
 };
 
-export const Channel = memo(({ index = 0, data, uuid }: ChannelProps) => {
-  const [channel, setChannelOptions] = useAtom(data.channel);
-  const [getCurrentMIDI, setCurrentMIDI] = useAtom(MIDIInput);
+export const Channel = memo(({ index = 0, data }: ChannelProps) => {
+  const updateChannelOptions = useUpdateAtom(data.channel);
+  const updateCurrentChannelOptions = useUpdateAtom(useAtomValue(CurrentChannel));
+  const updateCurrentChannel = useUpdateAtom(CurrentChannel);
+
+  const metadata = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.metadata), []));
+  const mixer = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.mixer), []));
+  const device = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.device), []));
 
   //
 
-  const isMaster = channel.type === 'master';
+  const isMaster = metadata.type === 'master';
 
   //
 
   const addDevice = () => {
-    setChannelOptions(current => ({
+    updateChannelOptions(current => ({
       ...current,
-      title: 'dian carlos',
+      metadata: {
+        ...current.metadata,
+        title: 'Merus Square',
+      },
       device: {
         ...current.device,
-        component: <Merus data={data} type={!index? 'sawtooth': 'square'} />
+        component: <Merus data={data} type={!index ? 'sawtooth' : index === 1 ? 'square' : index === 2 ? 'triangle' : 'sine'} />
       }
     }));
   }
 
-  const activateMIDI = () => {
-    setChannelOptions(current => ({
-      ...current,
-      arm: true,
-    }));
-    setCurrentMIDI(data);
+  const activateMIDI = async () => {
+    if (!mixer.arm) {
+      updateCurrentChannelOptions(clearMIDINotes);
+      updateCurrentChannel(data.channel);
+      updateChannelOptions(current => ({
+        ...current,
+        mixer: {
+          ...current.mixer,
+          arm: true
+        }
+      }));
+    }
   }
 
   return (
     <Styled.Container>
-      <ChannelTitle isMaster={isMaster} type={channel.type} index={index} title={channel.title} />
-      { !channel.device.component ? <button onClick={addDevice}>add device</button> : 'device connected' }
-      <button onClick={activateMIDI}>activate midi</button>
-      { getCurrentMIDI?.uuid === uuid && 'midi active' }
+      <ChannelTitle isMaster={isMaster} type={metadata.type} index={index} title={metadata.title} />
+      {
+        !isMaster && (
+        <>
+          { !device.component ? <button onClick={addDevice}>add device</button> : 'device connected' }
+          <button onClick={activateMIDI}>activate midi</button>
+          { mixer.arm && 'channel armed' }
+        </>)
+      }
     </Styled.Container>
   );
 });
