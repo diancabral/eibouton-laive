@@ -1,26 +1,21 @@
 import { useEffect } from 'react';
-import { useAtomValue } from 'jotai';
-import { useUpdateAtom } from 'jotai/utils';
-import { CurrentChannel } from '../../store/channels';
-import { MIDINotesOff, MIDINotesOn } from '../../store/midi';
+import { useGetMIDIGlobal } from '../../store/midi/hooks/useGetMIDIGlobal';
+import { useUpdateCurrentChannel } from '../../store/channels/hooks/useUpdateCurrentChannel';
 
 export const MIDIBridge = () => {
-  const getMIDINotesOn = useAtomValue(MIDINotesOn);
-  const getMIDINotesOff = useAtomValue(MIDINotesOff);
-  const updateCurrentChannelOptions = useUpdateAtom(useAtomValue(CurrentChannel));
+  const {
+    getMIDINotesOn: notesOn,
+    getMIDINotesOff: notesOff
+  } = useGetMIDIGlobal();
+
+  const { setCurrentChannelMIDI } = useUpdateCurrentChannel();
 
   useEffect(() => {
-    updateCurrentChannelOptions(current => ({
-      ...current,
-      midi: {
-        ...current.midi,
-        input: {
-          notesOn: getMIDINotesOn,
-          notesOff: getMIDINotesOff
-        }
-      }
-    }));
-  }, [getMIDINotesOn, getMIDINotesOff]);
+    setCurrentChannelMIDI({
+      notesOn,
+      notesOff,
+    })
+  }, [notesOn, notesOff]);
 
   return <></>;
 }

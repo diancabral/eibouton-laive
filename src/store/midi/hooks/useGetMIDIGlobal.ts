@@ -1,5 +1,5 @@
 import { useAtomValue } from 'jotai';
-import { MIDIControllers, MIDINotesOff, MIDINotesOn, MIDIReceived } from '../../../store/midi';
+import { MIDIControllers, MIDINotesOff, MIDINotesOn, MIDIReceived } from '..';
 
 export const useGetMIDIGlobal = () => {
   const getControllers = useAtomValue(MIDIControllers);

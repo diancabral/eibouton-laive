@@ -1,5 +1,4 @@
-import { useGetMIDIGlobal } from '../../../../../providers/MIDIProvider/hooks/useGetMIDIGlobal';
-
+import { useGetMIDIGlobal } from '../../../../../store/midi/hooks/useGetMIDIGlobal';
 import * as Styled from './styled'
 
 const MIDIInIndicator = () => {

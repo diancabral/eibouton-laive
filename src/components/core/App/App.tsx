@@ -6,8 +6,7 @@ import { Footer } from '../Footer/Footer';
 import * as Styled from './styled';
 
 import { MIDIProvider } from '../../../providers/MIDIProvider/MIDIProvider';
-import { ChannelsContext } from '../../../contexts/ChannelsContext/ChannelsContext';
-import { useUpdateChannels } from '../../../hooks/useUpdateChannels';
+import { useUpdateChannels } from '../../../store/channels/hooks/useUpdateChannels';
 
 export const App = memo(() => {
   const [ready, setReady] = useState(false);
@@ -21,7 +20,6 @@ export const App = memo(() => {
 
   return ready ? (<>
     <MIDIProvider />
-    <ChannelsContext />
     <Styled.Container>
       <Styled.Row $fit>
         <Header />

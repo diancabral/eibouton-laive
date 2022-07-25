@@ -1,5 +1,5 @@
 import { useUpdateAtom } from 'jotai/utils';
-import { MIDIControllers, MIDINotesOff, MIDINotesOn, MIDIReceived } from '../../../store/midi';
+import { MIDIControllers, MIDINotesOff, MIDINotesOn, MIDIReceived } from '..';
 
 export const useUpdateMIDIGlobal = () => {
   const updateControllers = useUpdateAtom(MIDIControllers);

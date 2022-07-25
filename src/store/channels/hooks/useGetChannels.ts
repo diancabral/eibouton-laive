@@ -1,5 +1,5 @@
 import { useAtomValue } from 'jotai';
-import { Channels } from '../store/channels';
+import { Channels } from '..';
 
 export const useGetChannels = () => {
   const channels = useAtomValue(Channels);

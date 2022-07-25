@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { useUpdateAtom } from 'jotai/utils';
-import { ChannelType } from '../../../../../../store/channels/types';
-import { useUpdateCurrentChannel } from '../../../../../../hooks/useUpdateCurrentChannel';
+import { useUpdateCurrentChannel } from './useUpdateCurrentChannel';
+import { ChannelType } from '../types';
 
 export const useUpdateChannelData = (data: ChannelType) => {
   const updateChannelOptions = useUpdateAtom(data.channel);

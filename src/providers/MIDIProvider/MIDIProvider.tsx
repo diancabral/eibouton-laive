@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { getNoteInfo } from './utils';
 import { MIDI_NOTE_OFF, MIDI_NOTE_ON } from './consts';
 import { MIDIBridge } from './MIDIBridge';
-import { useUpdateMIDIGlobal } from './hooks/useUpdateMIDIGlobal';
+import { useUpdateMIDIGlobal } from '../../store/midi/hooks/useUpdateMIDIGlobal';
 
 //
 

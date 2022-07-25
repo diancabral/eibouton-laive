@@ -2,12 +2,12 @@ import { memo } from 'react';
 import { ChannelTrackType, ChannelType } from '../../../../../store/channels/types';
 import { TYPES_TITLES } from './consts';
 
-import { useGetChannelData } from './hooks/useGetChannelData';
-import { useUpdateChannelData } from './hooks/useUpdateChannelData';
+import { useGetChannelData } from '../../../../../store/channels/hooks/useGetChannelData';
 
 import { Merus } from '../../../../../devices/Merus/Merus';
 
 import * as Styled from './styled';
+import { useUpdateChannelData } from '../../../../../store/channels/hooks/useUpdateChannelData';
 
 //
 

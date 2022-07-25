@@ -1,8 +1,8 @@
 import { atom } from 'jotai';
 import { useUpdateAtom } from 'jotai/utils';
 import { v4 as uuidv4 } from 'uuid';
-import { Channels } from '../store/channels';
-import { ChannelModel } from '../store/channels/models';
+import { Channels } from '..';
+import { ChannelModel } from '../models';
 import { useUpdateCurrentChannel } from './useUpdateCurrentChannel';
 
 export const useUpdateChannels = () => {

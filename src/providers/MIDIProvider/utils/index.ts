@@ -18,20 +18,3 @@ export const getNoteInfo = (key: number) => {
     octave
   };
 };
-
-//
-
-export const clearMIDINotes = (current: any) => ({
-  ...current,
-  midi: {
-    ...current.midi,
-    input: {
-      notesOn: [],
-      notesOff: 0
-    }
-  },
-  mixer: {
-    ...current.mixer,
-    arm: false,
-  }
-});

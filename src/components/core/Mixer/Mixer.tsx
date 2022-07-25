@@ -1,10 +1,18 @@
 import { memo } from 'react';
+import { useGetChannelData } from '../../../store/channels/hooks/useGetChannelData';
+import { useGetChannels } from '../../../store/channels/hooks/useGetChannels';
+import { useUpdateChannels } from '../../../store/channels/hooks/useUpdateChannels';
+import { ChannelType } from '../../../store/channels/types';
 import { Channel } from './components/Channel/Channel';
 
-import { useUpdateChannels } from '../../../hooks/useUpdateChannels';
-import { useGetChannels } from '../../../hooks/useGetChannels';
-
 import * as Styled from './styled';
+
+const Device = ({ data }: {
+  data: ChannelType
+}) => {
+  const { device } = useGetChannelData(data);
+  return device.component || <></>;
+};
 
 const MixerChannels = () => {
   const { channels } = useGetChannels();
@@ -14,6 +22,7 @@ const MixerChannels = () => {
         return (
           <Styled.Column key={val.uuid}>
             <Channel data={val} index={index} />
+            <Device data={val} />
           </Styled.Column>
         );
       })}

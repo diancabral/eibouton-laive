@@ -87,5 +87,5 @@ export const Merus = ({ data, type }: MerusType) => {
 
   //
 
-  return <p>oscillator</p>
+  return <></>
 }
