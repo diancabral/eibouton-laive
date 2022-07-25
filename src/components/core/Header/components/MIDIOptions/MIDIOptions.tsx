@@ -1,11 +1,10 @@
-import { useAtom } from 'jotai';
-import { MIDIReceived } from '../../../../../store/midi';
+import { useGetMIDIGlobal } from '../../../../../providers/MIDIProvider/hooks/useGetMIDIGlobal';
 
 import * as Styled from './styled'
 
 const MIDIInIndicator = () => {
-  const [received] = useAtom(MIDIReceived);
-  return <Styled.Indicator key={received} />
+  const { getMIDIReceived } = useGetMIDIGlobal();
+  return <Styled.Indicator key={getMIDIReceived} />
 }
 
 const MIDIOutIndicator = () => <Styled.Indicator />

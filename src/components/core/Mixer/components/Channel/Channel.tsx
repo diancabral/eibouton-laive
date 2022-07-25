@@ -1,12 +1,11 @@
-import { memo, useMemo } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
-import { Merus } from '../../../../../devices/Merus/Merus';
+import { memo } from 'react';
 import { ChannelTrackType, ChannelType } from '../../../../../store/channels/types';
 import { TYPES_TITLES } from './consts';
 
-import { selectAtom, useUpdateAtom } from 'jotai/utils';
-import { clearMIDINotes } from '../../../../../providers/MIDIProvider/utils';
-import { CurrentChannel } from '../../../../../store/channels';
+import { useGetChannelData } from './hooks/useGetChannelData';
+import { useUpdateChannelData } from './hooks/useUpdateChannelData';
+
+import { Merus } from '../../../../../devices/Merus/Merus';
 
 import * as Styled from './styled';
 
@@ -40,46 +39,28 @@ type ChannelProps = {
 };
 
 export const Channel = memo(({ index = 0, data }: ChannelProps) => {
-  const updateChannelOptions = useUpdateAtom(data.channel);
-  const updateCurrentChannelOptions = useUpdateAtom(useAtomValue(CurrentChannel));
-  const updateCurrentChannel = useUpdateAtom(CurrentChannel);
+  const {
+    metadata,
+    mixer,
+    device,
+    isMaster
+  } = useGetChannelData(data);
 
-  const metadata = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.metadata), []));
-  const mixer = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.mixer), []));
-  const device = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.device), []));
-
-  //
-
-  const isMaster = metadata.type === 'master';
+  const {
+    updateChannelTitle,
+    updateChannelDevice,
+    activateChannelArm
+  } = useUpdateChannelData(data);
 
   //
 
   const addDevice = () => {
-    updateChannelOptions(current => ({
-      ...current,
-      metadata: {
-        ...current.metadata,
-        title: 'Merus Square',
-      },
-      device: {
-        ...current.device,
-        component: <Merus data={data} type={!index ? 'sawtooth' : index === 1 ? 'square' : index === 2 ? 'triangle' : 'sine'} />
-      }
-    }));
+    updateChannelTitle(!index ? 'sawtooth' : index === 1 ? 'square' : index === 2 ? 'triangle' : 'sine');
+    updateChannelDevice(<Merus data={data} type={!index ? 'sawtooth' : index === 1 ? 'square' : index === 2 ? 'triangle' : 'sine'} />);
   }
 
   const activateMIDI = async () => {
-    if (!mixer.arm) {
-      updateCurrentChannelOptions(clearMIDINotes);
-      updateCurrentChannel(data.channel);
-      updateChannelOptions(current => ({
-        ...current,
-        mixer: {
-          ...current.mixer,
-          arm: true
-        }
-      }));
-    }
+    if (!mixer.arm) activateChannelArm();
   }
 
   return (
@@ -89,7 +70,7 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
         !isMaster && (
         <>
           { !device.component ? <button onClick={addDevice}>add device</button> : 'device connected' }
-          <button onClick={activateMIDI}>activate midi</button>
+          <button onClick={activateMIDI}>arm channel</button>
           { mixer.arm && 'channel armed' }
         </>)
       }

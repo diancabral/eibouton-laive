@@ -1,21 +1,18 @@
 import { useEffect } from 'react';
-import { useUpdateAtom } from 'jotai/utils';
 import { getNoteInfo } from './utils';
-import { MIDIControllers, MIDINotesOff, MIDINotesOn, MIDIReceived } from '../../store/midi';
 import { MIDI_NOTE_OFF, MIDI_NOTE_ON } from './consts';
 import { MIDIBridge } from './MIDIBridge';
+import { useUpdateMIDIGlobal } from './hooks/useUpdateMIDIGlobal';
 
 //
 
 export const MIDIProvider = () => {
-  const updateControllers = useUpdateAtom(MIDIControllers);
-  const updateMIDIReceived = useUpdateAtom(MIDIReceived);
-  const updateMIDINotesOn = useUpdateAtom(MIDINotesOn);
-  const updateMIDINotesOf = useUpdateAtom(MIDINotesOff);
-
-  useEffect(() => {
-
-  });
+  const {
+    updateControllers,
+    updateMIDIReceived,
+    updateMIDINotesOn,
+    updateMIDINotesOff
+  } = useUpdateMIDIGlobal();
 
   const registerMIDIController = (controller: MIDIInput) => {
     updateControllers(current => [...current, {
@@ -26,13 +23,13 @@ export const MIDIProvider = () => {
   };
 
   const removeMIDIMessage = async (key: number) => {
-    updateMIDINotesOf(key);
+    updateMIDINotesOff(key);
     updateMIDINotesOn(current => current.filter((val) => val.key !== key));
   }
 
   const registerMIDINoteMessage = ([ _, key, velocity ]: any) => {
     const { frequency, octave, note } = getNoteInfo(key) || {};
-    updateMIDINotesOf(0);
+    updateMIDINotesOff(0);
     updateMIDINotesOn(current => [...current, {
       key,
       frequency,

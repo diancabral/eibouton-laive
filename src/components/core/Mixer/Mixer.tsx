@@ -1,16 +1,13 @@
 import { memo } from 'react';
-import { atom, useAtom, useAtomValue } from 'jotai';
-import { useUpdateAtom } from 'jotai/utils';
-import { v4 as uuidv4 } from 'uuid';
-import { Channels, CurrentChannel } from '../../../store/channels';
-import { ChannelModel } from '../../../store/channels/models';
 import { Channel } from './components/Channel/Channel';
-import { clearMIDINotes } from '../../../providers/MIDIProvider/utils';
+
+import { useUpdateChannels } from '../../../hooks/useUpdateChannels';
+import { useGetChannels } from '../../../hooks/useGetChannels';
 
 import * as Styled from './styled';
 
 const MixerChannels = () => {
-  const [channels] = useAtom(Channels);
+  const { channels } = useGetChannels();
   return (
     <>
       {channels.map((val, index) => {
@@ -25,30 +22,11 @@ const MixerChannels = () => {
 };
 
 const MixerAdd = () => {
-  const updateChannels = useUpdateAtom(Channels);
-  const updateCurrentChannelOptions = useUpdateAtom(useAtomValue(CurrentChannel));
-  const updateCurrentChannel = useUpdateAtom(CurrentChannel);
-
-  const addChannel = () => {
-    const uuid = uuidv4();
-    const channel = {
-      uuid,
-      channel: atom(structuredClone(ChannelModel)),
-    };
-    updateCurrentChannelOptions(clearMIDINotes);
-    updateCurrentChannel(channel.channel);
-    updateChannels((current) => ([
-      ...current,
-      channel
-    ]));
-  };
-
-  return <button onClick={addChannel}>add channel</button>
+  const { createChannel } = useUpdateChannels();
+  return <button onClick={createChannel} style={{ height: '20px '}}>add channel</button>
 };
 
 export const Mixer = memo(() => {
-
-
   return (
     <Styled.Container>
       <Styled.Row>

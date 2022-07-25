@@ -1,9 +1,8 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { useAtomValue } from 'jotai';
+import { useContext, useEffect, useState } from 'react';
 import { AudioContext } from '../../contexts/AudioContext/AudioContext';
 import Oscillator from '../../web-audio/Oscillator';
 import { ChannelType } from '../../store/channels/types';
-import { selectAtom } from 'jotai/utils';
+import { useGetMIDIMessages } from './hooks/useGetMIDIMessages';
 
 type MerusType = {
   data: ChannelType;
@@ -13,7 +12,7 @@ type MerusType = {
 export const Merus = ({ data, type }: MerusType) => {
   const audio = useContext(AudioContext);
 
-  const midi = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.midi.input), []));
+  const { midi } = useGetMIDIMessages(data);
 
   const [, setCurrentOscillators] = useState<{
     oscillators: Oscillator[],

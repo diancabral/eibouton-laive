@@ -1,12 +1,11 @@
-import { useAtom } from 'jotai';
-import { MIDINotesOn } from '../../../store/midi';
+import { useGetMIDIGlobal } from '../../../providers/MIDIProvider/hooks/useGetMIDIGlobal';
 
 import * as Styled from './styled';
 
 const MidiNoteIndicator = () => {
-  const [notes] = useAtom(MIDINotesOn);
-  return !!notes.length ? (
-    <>MIDI Note: {notes.map((val) => val.display).slice(-1)}</>
+  const { getMIDINotesOn } = useGetMIDIGlobal();
+  return !!getMIDINotesOn.length ? (
+    <>MIDI Note: {getMIDINotesOn.map((val) => val.display).slice(-1)}</>
   ) : <></>;
 }
 
