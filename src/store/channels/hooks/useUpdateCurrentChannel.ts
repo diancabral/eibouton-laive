@@ -1,47 +1,31 @@
 import { useAtomValue, useUpdateAtom } from 'jotai/utils';
 import { CurrentChannel } from '..';
-import { MIDINoteType } from '../../midi/types';
+import { ChannelType } from '../../../types';
+import { useUpdateMIDIArmed } from '../../midi/hooks/useUpdateMIDIArmed';
 
 export const useUpdateCurrentChannel = () => {
   const updateCurrentChannelOptions = useUpdateAtom(useAtomValue(CurrentChannel));
   const updateCurrentChannel = useUpdateAtom(CurrentChannel);
 
-  const clearCurrentChannelMIDI = () => updateCurrentChannelOptions(current => ({
+  const { updateMIDIArmed, clearMIDIArmed } = useUpdateMIDIArmed();
+
+  const clearChannelSelected = () => updateCurrentChannelOptions(current => ({
     ...current,
-    midi: {
-      ...current.midi,
-      input: {
-        notesOn: [],
-        notesOff: 0
-      }
-    },
-    mixer: {
-      ...current.mixer,
-      arm: false,
-    }
+    selected: false,
   }));
 
-  const setCurrentChannelMIDI = ({
-    notesOn,
-    notesOff
-  }: {
-    notesOn: MIDINoteType[],
-    notesOff: number
-  }) => updateCurrentChannelOptions(current => ({
-    ...current,
-    midi: {
-      ...current.midi,
-      input: {
-        notesOn,
-        notesOff
-      }
+  const setCurrentChannel = (data: ChannelType, midi: boolean = true) => {
+    if (midi) {
+      clearMIDIArmed();
+      updateMIDIArmed(data.channel);
     }
-  }));
+    clearChannelSelected();
+    updateCurrentChannel(data.channel);
+  }
 
   return {
+    setCurrentChannel,
     updateCurrentChannel,
     updateCurrentChannelOptions,
-    clearCurrentChannelMIDI,
-    setCurrentChannelMIDI
   }
 }

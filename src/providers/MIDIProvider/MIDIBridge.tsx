@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useGetMIDIGlobal } from '../../store/midi/hooks/useGetMIDIGlobal';
-import { useUpdateCurrentChannel } from '../../store/channels/hooks/useUpdateCurrentChannel';
+import { useUpdateMIDIArmed } from '../../store/midi/hooks/useUpdateMIDIArmed';
 
 export const MIDIBridge = () => {
   const {
@@ -8,10 +8,10 @@ export const MIDIBridge = () => {
     getMIDINotesOff: notesOff
   } = useGetMIDIGlobal();
 
-  const { setCurrentChannelMIDI } = useUpdateCurrentChannel();
+  const { setMIDIArmedMIDI } = useUpdateMIDIArmed();
 
   useEffect(() => {
-    setCurrentChannelMIDI({
+    setMIDIArmedMIDI({
       notesOn,
       notesOff,
     })

@@ -1,6 +1,7 @@
 import { memo } from 'react';
-import { Mixer } from '../Mixer/Mixer';
 import { Header } from '../Header/Header';
+import { Mixer } from '../Mixer/Mixer';
+import { DeviceView } from '../DeviceView/DeviceView';
 import { Footer } from '../Footer/Footer';
 
 import * as Styled from './styled';
@@ -13,13 +14,16 @@ export const App = memo(() => {
     <AudioProvider />
     <MIDIProvider />
     <Styled.Container>
-      <Styled.Row $fit>
+      <Styled.Row $fitContent>
         <Header />
       </Styled.Row>
       <Styled.Row>
         <Mixer />
       </Styled.Row>
-      <Styled.Row $fit>
+      <Styled.Row $fitContent>
+        <DeviceView />
+      </Styled.Row>
+      <Styled.Row $fitContent>
         <Footer />
       </Styled.Row>
     </Styled.Container>

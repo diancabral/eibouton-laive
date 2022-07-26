@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { ChannelTrackType, ChannelType } from '../../../../../store/channels/types';
+import { ChannelTrackType, ChannelType } from '../../../../../types';
 import { TYPES_TITLES } from './consts';
 
 import { useGetChannelData } from '../../../../../store/channels/hooks/useGetChannelData';
@@ -40,6 +40,7 @@ type ChannelProps = {
 
 export const Channel = memo(({ index = 0, data }: ChannelProps) => {
   const {
+    selected,
     metadata,
     mixer,
     device,
@@ -49,13 +50,13 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
   const {
     updateChannelTitle,
     updateChannelDevice,
-    activateChannelArm
+    activateChannelArm,
+    updateChannelSelected
   } = useUpdateChannelData(data);
 
   //
 
   const addDevice = () => {
-    updateChannelTitle(!index ? 'sawtooth' : index === 1 ? 'square' : index === 2 ? 'triangle' : 'sine');
     updateChannelDevice(<Merus data={data} type={!index ? 'sawtooth' : index === 1 ? 'square' : index === 2 ? 'triangle' : 'sine'} />);
   }
 
@@ -63,9 +64,15 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
     if (!mixer.arm) activateChannelArm();
   }
 
+  const selectChannel = async () => {
+    if (!selected) updateChannelSelected();
+  }
+
   return (
-    <Styled.Container>
-      <ChannelTitle isMaster={isMaster} type={metadata.type} index={index} title={metadata.title} />
+    <Styled.Container $selected={selected}>
+      <div onClick={selectChannel}>
+        <ChannelTitle  isMaster={isMaster} type={metadata.type} index={index} title={metadata.title} />
+      </div>
       {
         !isMaster && (
         <>

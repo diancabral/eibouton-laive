@@ -1,12 +1,7 @@
-import { MIDIInputType } from '../../midi/types';
 import { ChannelMetadata } from '../types';
 
-export const ChannelMIDIInputModel: MIDIInputType = {
-  notesOn: [],
-  notesOff: 0
-}
-
-export const ChannelModel: ChannelMetadata = {
+export const defaultChannel: ChannelMetadata = {
+  selected: true,
   metadata: {
     type: 'midi',
     title: '',
@@ -16,7 +11,10 @@ export const ChannelModel: ChannelMetadata = {
     config: null,
   },
   midi: {
-    input: ChannelMIDIInputModel,
+    input: {
+      notesOn: [],
+      notesOff: 0
+    },
     messages: [
       {
         title: '',
@@ -34,17 +32,6 @@ export const ChannelModel: ChannelMetadata = {
     active: true,
     solo: false,
     arm: true,
-    gain: 0,
-    pan: 0,
-  }
-};
-
-export const ChannelMasterModel: Omit<ChannelMetadata, 'device' | 'midi'> = {
-  metadata: {
-    type: 'master',
-    title: 'Master',
-  },
-  mixer: {
     gain: 0,
     pan: 0,
   }

@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { PrimitiveAtom } from 'jotai';
-import Oscillator from '../../../web-audio/Oscillator';
-import { MIDIInputType } from '../../midi/types';
+import Oscillator from '../web-audio/Oscillator';
+import { MIDIInputType } from '../store/midi/types';
 
 export type ChannelTrackType = 'midi' | 'audio' | 'master';
 
@@ -23,6 +23,7 @@ export type ChannelMIDIMessages = {
 };
 
 export type ChannelMetadata = {
+  selected: boolean,
   metadata: {
     /** Set channel to MIDI, Audio or Master output */
     type: ChannelTrackType;
@@ -53,6 +54,6 @@ export type ChannelMetadata = {
 };
 
 export type ChannelType = {
-  uuid: string;
+  uuid?: string;
   channel: PrimitiveAtom<ChannelMetadata>;
 };

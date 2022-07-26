@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import Oscillator from '../../web-audio/Oscillator';
-import { ChannelType } from '../../store/channels/types';
+import { ChannelType } from '../../types';
 import { useGetMIDIMessages } from './hooks/useGetMIDIMessages';
 import { useGetAudioGlobal } from '../../store/audio/hooks/useGetAudioGlobal';
 
 type MerusType = {
   data: ChannelType;
-  type: OscillatorType;
+  type?: OscillatorType;
 }
 
-export const Merus = ({ data, type }: MerusType) => {
+export const Merus = ({ data, type = 'sawtooth' }: MerusType) => {
   const { context, master } = useGetAudioGlobal();
   const { midi } = useGetMIDIMessages(data);
 
