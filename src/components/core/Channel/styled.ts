@@ -12,11 +12,13 @@ type ContainerProps = {
 
 export const Container = styled.div.attrs<ContainerProps>((props) => ({
   style: {
-    background: props.$selected ? 'rgba(255, 255, 255, 0.15)' : null
+    background: props.$selected && 'rgba(255, 255, 255, 0.15)'
   },
 }))<ContainerProps>`
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const Title = styled.div`

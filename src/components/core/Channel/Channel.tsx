@@ -1,13 +1,15 @@
 import { memo } from 'react';
-import { ChannelTrackType, ChannelType } from '../../../../../types';
+import { ChannelTrackType, ChannelType } from '../../../types';
 import { TYPES_TITLES } from './consts';
 
-import { useGetChannelData } from '../../../../../store/channels/hooks/useGetChannelData';
+import { useGetChannelData } from '../../../store/channels/hooks/useGetChannelData';
 
-import { Merus } from '../../../../../devices/Merus/Merus';
+import { Merus } from '../../../devices/Merus/Merus';
 
 import * as Styled from './styled';
-import { useUpdateChannelData } from '../../../../../store/channels/hooks/useUpdateChannelData';
+import { useUpdateChannelData } from '../../../store/channels/hooks/useUpdateChannelData';
+import { useGetCurrentChannelMIDIInput } from '../../../store/channels/hooks/useGetCurrentChannelData';
+import { MIDIIndicator } from '../../ui/MIDIIndicator/MIDIIndicator';
 
 //
 
@@ -33,6 +35,10 @@ ChannelTitle.displayName = 'Channel Title';
 
 //
 
+export const InputIndicator = ({ midi }: any) => {
+  return <MIDIIndicator data={midi} />
+}
+
 type ChannelProps = {
   index?: number
   data: ChannelType
@@ -44,6 +50,7 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
     metadata,
     mixer,
     device,
+    midi,
     isMaster
   } = useGetChannelData(data);
 
@@ -57,6 +64,7 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
   //
 
   const addDevice = () => {
+    updateChannelTitle(!index ? 'sawtooth' : index === 1 ? 'square' : index === 2 ? 'triangle' : 'sine');
     updateChannelDevice(<Merus data={data} type={!index ? 'sawtooth' : index === 1 ? 'square' : index === 2 ? 'triangle' : 'sine'} />);
   }
 
@@ -77,8 +85,8 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
         !isMaster && (
         <>
           { !device.component ? <button onClick={addDevice}>add device</button> : 'device connected' }
-          <button onClick={activateMIDI}>arm channel</button>
-          { mixer.arm && 'channel armed' }
+          <InputIndicator midi={midi} />
+          <button onClick={activateMIDI}>{ !mixer.arm ? 'arm' : 'armed' }</button>
         </>)
       }
     </Styled.Container>

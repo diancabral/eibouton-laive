@@ -15,7 +15,7 @@ export const useUpdateChannelData = (data: ChannelType) => {
         component
       }
     }));
-    updateChannelSelected();
+    activateChannelArm();
   };
 
   const updateChannelTitle = (title: string) => updateChannelOptions(current => ({

@@ -3,7 +3,7 @@ import { useGetDevice } from '../../../store/channels/hooks/useGetChannelData';
 import { useGetChannels } from '../../../store/channels/hooks/useGetChannels';
 import { useUpdateChannels } from '../../../store/channels/hooks/useUpdateChannels';
 import { ChannelType } from '../../../types';
-import { Channel } from './components/Channel/Channel';
+import { Channel } from '../Channel/Channel';
 
 import * as Styled from './styled';
 

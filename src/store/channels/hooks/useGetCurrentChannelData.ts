@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { selectAtom } from 'jotai/utils';
 import { CurrentChannel } from '..';
-import { ChannelType } from '../../../types';
 
 export const useGetCurrentChannelData = () => {
   const getCurrentChannel = useAtomValue(CurrentChannel);
@@ -23,4 +22,9 @@ export const useGetCurrentChannelData = () => {
 export const useGetCurrentChannelDevice = () => {
   const getCurrentChannel = useAtomValue(CurrentChannel);
   return useAtomValue(useMemo(() => selectAtom(getCurrentChannel, channel => channel.device), [getCurrentChannel]));
+}
+
+export const useGetCurrentChannelMIDIInput = () => {
+  const getCurrentChannel = useAtomValue(CurrentChannel);
+  return useAtomValue(useMemo(() => selectAtom(getCurrentChannel, channel => channel.midi.input), [getCurrentChannel]));
 }

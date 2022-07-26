@@ -8,6 +8,7 @@ export const useGetChannelData = (data: ChannelType) => {
   const metadata = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.metadata), [data.channel]));
   const mixer = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.mixer), [data.channel]));
   const device = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.device), [data.channel]));
+  const midi = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.midi.input), [data.channel]));
 
   const isMaster = metadata.type === 'master';
 
@@ -16,6 +17,7 @@ export const useGetChannelData = (data: ChannelType) => {
     metadata,
     mixer,
     device,
+    midi,
     isMaster
   }
 }
