@@ -9,8 +9,11 @@ import * as Styled from './styled';
 import { MIDIProvider } from '../../../providers/MIDIProvider/MIDIProvider';
 import { AudioProvider } from '../../../providers/AudioProvider/AudioProvider';
 
+import  { ReactComponent as Sprite } from '../../../static/icons/svg/sprite.css.svg';
+
 export const App = memo(() => {
   return <>
+    <Sprite />
     <AudioProvider />
     <MIDIProvider />
     <Styled.Container>

@@ -32,7 +32,7 @@ export const DeviceView = () => {
   return (
     <Styled.Container>
       <InputIndicator />
-      { !device.component ? <button onClick={addDevice}>add device</button> : 'device connected' }
+      { !device.component && <Styled.Message>Drop an Instrument or Sample here</Styled.Message> }
     </Styled.Container>
   );
 }
