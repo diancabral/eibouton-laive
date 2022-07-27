@@ -17,6 +17,8 @@ export const useGetChannelData = (data: ChannelType) => {
     metadata,
     mixer,
     device,
+
+
     midi,
     isMaster
   }
