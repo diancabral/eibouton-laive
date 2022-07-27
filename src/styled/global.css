@@ -20,6 +20,9 @@
   font-weight: 1 999;
   font-style: italic;
 }
+:root {
+  font-size: 10px;
+}
 body {
   margin: 0;
   padding: 0;
@@ -28,7 +31,8 @@ body {
 * {
   font-family: 'Albert Sans', sand-serif;
   letter-spacing: .1px;
-  font-weight: 450;
+  font-weight: 500;
   user-select: none;
   box-sizing: border-box;
+  font-size: 1rem;
 }

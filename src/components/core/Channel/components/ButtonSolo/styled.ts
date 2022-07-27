@@ -14,6 +14,7 @@ export const ButtonSolo = styled(Button).attrs<ButtonSoloProps>(({ theme, $activ
     padding: 0 ${theme.spacing.sm};
     background: ${theme.colors.grey[800]};
     color: ${$active ? 'black' : 'white'};
+    line-height: 12px;
     &:not(:last-of-type) {
       margin-bottom: 5px;
     }

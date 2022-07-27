@@ -1,18 +1,21 @@
-import { lighten } from 'polished';
 import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
   height: 100%;
-  background: ${({ theme }) => theme.colors.containers.background};
-  border: 4px solid ${({ theme }) => theme.colors.grey[900]};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.grey[300]};
-  transform: translate3d(0,0,0);
   display: flex;
 `;
 
+const afterLine = css`
+&::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: inherit;
+  height: 4px;
+  background: ${({ theme }) => theme.colors.grey[900]};
+}
+`
 
 export const Row = styled.ul<{
   $fixed?: boolean
@@ -28,15 +31,7 @@ export const Row = styled.ul<{
   overflow-x: scroll;
   overflow-y: hidden;
 
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: inherit;
-    height: 4px;
-    background: ${({ theme }) => theme.colors.grey[900]};
-  }
+  ${afterLine}
 
   ::-webkit-scrollbar {
     width: 4px;
@@ -68,4 +63,18 @@ export const Column = styled.li<{
   border-bottom: 4px solid ${({ theme }) => theme.colors.grey[900]};
   flex-shrink: 0;
   border-right: ${({ $fixed, theme }) => !$fixed ? `2px solid ${theme.colors.grey[900]}` : `none`};
+`;
+
+export const Message = styled.div`
+  position: relative;
+  width: 100%;
+  padding: ${({ theme }) => theme.spacing.xxl};
+  color: white;
+  white-space: nowrap;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  ${afterLine}
 `;

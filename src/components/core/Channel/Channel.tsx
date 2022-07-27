@@ -56,6 +56,7 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
     updateChannelTitle,
     updateChannelDevice,
     activateChannelArm,
+    deactivateChannelArm,
     activateSoloChannel,
     updateChannelSelected
   } = useUpdateChannelData(data);
@@ -67,8 +68,12 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
     updateChannelDevice(<Merus data={data} type={!index ? 'sawtooth' : index === 1 ? 'square' : index === 2 ? 'triangle' : 'sine'} />);
   }
 
-  const activateMIDI = async () => {
-    if (!mixer.arm) activateChannelArm();
+  const toggleMIDIArm = async () => {
+    if (!mixer.arm) {
+      activateChannelArm();
+    } else {
+      deactivateChannelArm();
+    }
   }
 
   const soloChannel = async () => {
@@ -81,7 +86,7 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
 
   return (
     <Styled.Container $selected={selected}>
-      <div onClick={selectChannel}>
+      <div onMouseDown={selectChannel}>
         <ChannelTitle isMaster={isMaster} type={metadata.type} index={index} title={metadata.title} />
       </div>
       {
@@ -94,7 +99,7 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
         }}>
           <Styled.MixerCol>
             <ButtonSolo onClick={soloChannel} active={mixer.solo} />
-            <ButtonArm onClick={activateMIDI} active={mixer.arm} />
+            <ButtonArm onClick={toggleMIDIArm} active={mixer.arm} />
           </Styled.MixerCol>
           <Styled.MixerCol>
             <InputIndicator midi={midi} />

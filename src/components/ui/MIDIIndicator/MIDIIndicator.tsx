@@ -11,7 +11,7 @@ type MIDIIndicatorType = {
 export const MIDIIndicator = ({ data, small }: MIDIIndicatorType) => {
   const midi = useMemo(() => data.notesOn, [data.notesOn]);
   const dots = useMemo(() => {
-    const length = small ? 10 : 20;
+    const length = small ? 12 : 24;
     const array = [...Array(length).keys()];
     const note = midi.slice(-1)[0];
     return array

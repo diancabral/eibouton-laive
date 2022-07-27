@@ -1,12 +1,9 @@
 import styled from 'styled-components';
+import { Wrapper } from '../../ui/Wrapper/styled';
 
-export const Container = styled.div`
+export const Container = styled(Wrapper)`
   height: 23px;
-  padding: 2px ${({ theme }) => theme.spacing.xs};
-  background: ${({ theme }) => theme.colors.containers.background};
-  border: 3px solid ${({ theme }) => theme.colors.containers.borderLight};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  font-size: 0.65rem;
-  font-weight: 600;
+  padding: 2px ${({ theme }) => theme.spacing.xs};;
   color: ${({ theme }) => theme.colors.grey[300]};
+  border-width: 3px;
 `;

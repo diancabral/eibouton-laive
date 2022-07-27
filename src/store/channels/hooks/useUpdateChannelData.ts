@@ -46,6 +46,16 @@ export const useUpdateChannelData = (data: ChannelType) => {
     }));
   };
 
+  const deactivateChannelArm = () => {
+    updateChannelOptions(current => ({
+      ...current,
+      mixer: {
+        ...current.mixer,
+        arm: false
+      }
+    }));
+  };
+
   const activateSoloChannel = () => {
     updateChannelOptions(current => ({
       ...current,
@@ -60,6 +70,7 @@ export const useUpdateChannelData = (data: ChannelType) => {
     updateChannelTitle,
     updateChannelDevice,
     activateChannelArm,
+    deactivateChannelArm,
     activateSoloChannel,
     updateChannelSelected,
   }

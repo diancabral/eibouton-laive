@@ -31,6 +31,6 @@ export const Dots = styled.li.attrs<DotsType>((props) => ({
   transition-property: background;
   transition-timing-function: linear;
   &:not(:last-of-type) {
-    margin-bottom: ${({ $small }) => $small ? '2px' : '4px'};
+    margin-bottom: ${({ $small }) => $small ? '2px' : '3px'};
   }
 `

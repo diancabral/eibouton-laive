@@ -21,6 +21,17 @@ export const useUpdateMIDIArmed = () => {
     }
   }));
 
+  const clearMIDIArmedNotes = () => updateMIDIArmedOptions(current => ({
+    ...current,
+    midi: {
+      ...current.midi,
+      input: {
+        notesOn: [],
+        notesOff: 0
+      }
+    },
+  }));
+
   const setMIDIArmedMIDI = ({
     notesOn,
     notesOff
@@ -42,6 +53,7 @@ export const useUpdateMIDIArmed = () => {
     updateMIDIArmed,
     updateMIDIArmedOptions,
     clearMIDIArmed,
+    clearMIDIArmedNotes,
     setMIDIArmedMIDI
   }
 }

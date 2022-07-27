@@ -7,6 +7,9 @@ export const Container = styled.ul`
   list-style: none;
   > li {
     padding: 0;
+    &:not(:last-of-type) {
+      margin-right: 2px;
+    }
   }
 `;
 

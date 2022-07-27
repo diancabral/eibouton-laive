@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useGetMIDIArmed } from '../../store/midi/hooks/useGetMIDIArmed';
 import { useGetMIDIGlobal } from '../../store/midi/hooks/useGetMIDIGlobal';
 import { useUpdateMIDIArmed } from '../../store/midi/hooks/useUpdateMIDIArmed';
 
@@ -8,14 +9,23 @@ export const MIDIBridge = () => {
     getMIDINotesOff: notesOff
   } = useGetMIDIGlobal();
 
-  const { setMIDIArmedMIDI } = useUpdateMIDIArmed();
+  const { clearMIDIArmedNotes, setMIDIArmedMIDI } = useUpdateMIDIArmed();
+  const { armed } = useGetMIDIArmed();
 
   useEffect(() => {
-    setMIDIArmedMIDI({
-      notesOn,
-      notesOff,
-    })
-  }, [notesOn, notesOff]);
+    if(!armed) {
+      clearMIDIArmedNotes();
+    }
+  }, [armed]);
+
+  useEffect(() => {
+    if (armed) {
+      setMIDIArmedMIDI({
+        notesOn,
+        notesOff,
+      });
+    }
+  }, [notesOn, notesOff, armed]);
 
   return <></>;
 }
