@@ -6,17 +6,15 @@ export const Container = styled.div`
   width: fit-content;
   display: flex;
   flex-direction: column;
-  margin-top: 100px;
 `;
 
 interface CircleProps {
-  $mode?: string;
   $rotate?: number;
 }
 
 export const Circle = styled.div.attrs<CircleProps>((props) => ({
   style: {
-    transform: `rotate(${(props.$mode !== 'center' ? -180 : -135) + (props.$rotate || 0)}deg)`,
+    transform: `rotate(${-135 + (props.$rotate || 0)}deg)`,
   },
 }))<CircleProps>`
   position: relative;
@@ -26,7 +24,6 @@ export const Circle = styled.div.attrs<CircleProps>((props) => ({
   display: flex;
   justify-content: center;
   border: 3px solid black;
-  transition: transform .2s ease;
   &::before {
     content: '';
     width: 3px;

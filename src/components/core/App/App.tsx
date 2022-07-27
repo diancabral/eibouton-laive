@@ -1,17 +1,33 @@
-import React from 'react';
-import { Knob } from '../../ui/Knob/Knob';
+import { memo } from 'react';
+import { Header } from '../Header/Header';
+import { Mixer } from '../Mixer/Mixer';
+import { DeviceView } from '../DeviceView/DeviceView';
+import { Footer } from '../Footer/Footer';
 
-export const App = () => {
-  const formatPanorama = (value: number) => {
-    return value === 0 ? 'C' : value < 0 ? `${Math.abs(value)}L` : value > 0 ? `${value}R` : String(value);
-  }
+import * as Styled from './styled';
 
-  return (
-    <>
-      <Knob value={20} min={20} max={200} />
-      Normal
-      <Knob value={0} min={-50} max={50} mode="center" format={formatPanorama} />
-      Center
-    </>
-  );
-};
+import { MIDIProvider } from '../../../providers/MIDIProvider/MIDIProvider';
+import { AudioProvider } from '../../../providers/AudioProvider/AudioProvider';
+
+export const App = memo(() => {
+  return <>
+    <AudioProvider />
+    <MIDIProvider />
+    <Styled.Container>
+      <Styled.Row $fitContent>
+        <Header />
+      </Styled.Row>
+      <Styled.Row>
+        <Mixer />
+      </Styled.Row>
+      <Styled.Row $fitContent>
+        <DeviceView />
+      </Styled.Row>
+      <Styled.Row $fitContent>
+        <Footer />
+      </Styled.Row>
+    </Styled.Container>
+  </>;
+});
+
+App.displayName = 'App';
