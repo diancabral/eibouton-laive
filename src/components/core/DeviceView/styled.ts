@@ -20,3 +20,17 @@ export const InputIndicator = styled.div`
   align-items: center;
   justify-content: center;
 `
+
+export const Row = styled.div`
+  display: flex;
+`;
+
+export const Message = styled.div`
+  width: 100%;
+  color: white;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+

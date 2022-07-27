@@ -46,10 +46,21 @@ export const useUpdateChannelData = (data: ChannelType) => {
     }));
   };
 
+  const activateSoloChannel = () => {
+    updateChannelOptions(current => ({
+      ...current,
+      mixer: {
+        ...current.mixer,
+        solo: true
+      }
+    }));
+  };
+
   return {
     updateChannelTitle,
     updateChannelDevice,
     activateChannelArm,
+    activateSoloChannel,
     updateChannelSelected,
   }
 }

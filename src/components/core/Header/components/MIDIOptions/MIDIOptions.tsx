@@ -11,12 +11,10 @@ const MIDIOutIndicator = () => <Styled.Indicator />
 export const MIDIOptions = () => {
   return (
     <Styled.Container>
-      <ul>
-        <li>
-          <MIDIInIndicator />
-          <MIDIOutIndicator />
-        </li>
-      </ul>
+      <li>
+        <MIDIInIndicator />
+        <MIDIOutIndicator />
+      </li>
     </Styled.Container>
   )
 };

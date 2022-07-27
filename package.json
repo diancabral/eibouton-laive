@@ -29,7 +29,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "generate-theme": "ts-node --transpile-only ./src/styled/scripts/generate-theme.ts"
+    "generate-theme": "ts-node --transpile-only ./src/styled/scripts/generate-theme.ts",
+    "generate-icons": "svg-sprite -d --defs-dest=./ --dest=./src/static/icons src/static/icons/*.svg"
   },
   "eslintConfig": {
     "extends": [
@@ -60,6 +61,7 @@
     "fs-extra": "^10.1.0",
     "npm-watch": "^0.11.0",
     "pascal-case": "^3.1.2",
+    "svg-sprite": "^1.5.4",
     "ts-node": "^10.9.1"
   },
   "watch": {
@@ -68,8 +70,23 @@
         "./src/styled/scripts/generate-theme.ts",
         "./src/styled/custom.ts",
         "./src/styled/theme.ts",
-        "./src/styled/variables.ts"
+        "./src/styled/variables.ts",
+        "./src/static/icons/"
       ],
+      "ignore": [
+        "./src/static/icons/svg/"
+      ],
+      "extensions": "svg",
+      "legacyWatch": true
+    },
+    "generate-icons": {
+      "patterns": [
+        "./src/static/icons/"
+      ],
+      "ignore": [
+        "./src/static/icons/svg/"
+      ],
+      "extensions": "svg",
       "legacyWatch": true
     }
   }

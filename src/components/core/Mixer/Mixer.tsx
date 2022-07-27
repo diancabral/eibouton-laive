@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { masterChannel } from '../../../models/masterChannel';
 import { useGetDevice } from '../../../store/channels/hooks/useGetChannelData';
 import { useGetChannels } from '../../../store/channels/hooks/useGetChannels';
 import { useUpdateChannels } from '../../../store/channels/hooks/useUpdateChannels';
@@ -35,15 +36,16 @@ const MixerAdd = () => {
 };
 
 export const Mixer = memo(() => {
+
   return (
     <Styled.Container>
       <Styled.Row>
-        <MixerAdd />
         <MixerChannels />
       </Styled.Row>
       <Styled.Row $fixed>
         <Styled.Column $fixed>
-          {/* <Channel data={ChannelMasterModel} /> */}
+          <MixerAdd />
+          {/* <Channel data={{ channel: masterChannel }} /> */}
         </Styled.Column>
       </Styled.Row>
     </Styled.Container>

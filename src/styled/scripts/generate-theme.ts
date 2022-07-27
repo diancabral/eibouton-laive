@@ -7,6 +7,7 @@ import { theme as defaultTheme} from '../theme';
 import custom from '../custom';
 
 const FILE_OUTPUT = path.join(__dirname, '../types/generated.d.ts');
+const SVG_FOLDER = path.join(__dirname, '../../static/icons/');
 
 const writeTypeValue = (object: any, onlyType: boolean = false): any => {
   const entries = Object.entries(object);
@@ -42,7 +43,10 @@ Object.keys(mergedTheme).forEach((value, index) => {
     output += `${value}: GeneratedTheme${pascalCase(value)},`;
   }
 });
-output += `}`;
+output += `}\n`;
+
+const svgIcons = fs.readdirSync(SVG_FOLDER).filter((val) => val.includes('.')).map((val) => `"${val.split('.')[0]}"`);
+output += `export type GeneratedIcons = ${svgIcons.join(' | ')}`;
 
 fs.outputFile(FILE_OUTPUT, output).then(() => fs.readFile(FILE_OUTPUT, 'utf8')).then(data => {
   console.log('Types file created successfully! ✌🏼😎');

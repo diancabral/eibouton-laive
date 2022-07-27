@@ -1,14 +1,12 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
+export const Container = styled.ul`
   display: flex;
-  > ul {
-    margin: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  > li {
     padding: 0;
-    list-style: none;
-    > li {
-      padding: 0;
-    }
   }
 `;
 

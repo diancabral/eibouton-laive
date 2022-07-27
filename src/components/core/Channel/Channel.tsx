@@ -1,15 +1,16 @@
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { ChannelTrackType, ChannelType } from '../../../types';
 import { TYPES_TITLES } from './consts';
 
 import { useGetChannelData } from '../../../store/channels/hooks/useGetChannelData';
+import { useUpdateChannelData } from '../../../store/channels/hooks/useUpdateChannelData';
+import { MIDIIndicator } from '../../ui/MIDIIndicator/MIDIIndicator';
 
 import { Merus } from '../../../devices/Merus/Merus';
+import { ButtonArm } from './components/ButtonArm/ButtonArm';
+import { ButtonSolo } from './components/ButtonSolo/ButtonSolo';
 
 import * as Styled from './styled';
-import { useUpdateChannelData } from '../../../store/channels/hooks/useUpdateChannelData';
-import { useGetCurrentChannelMIDIInput } from '../../../store/channels/hooks/useGetCurrentChannelData';
-import { MIDIIndicator } from '../../ui/MIDIIndicator/MIDIIndicator';
 
 //
 
@@ -20,18 +21,16 @@ type ChannelTitleProps = {
   index?: number
 }
 
-const ChannelTitle = memo(({
+const ChannelTitle = ({
   isMaster,
   type,
   title,
-  index = 0
+  index = 0,
 }: ChannelTitleProps) => {
   return isMaster ?
     <Styled.Title>{TYPES_TITLES['master']}</Styled.Title> :
     <Styled.Title>{`${!title ? (index + 1) : ''} ${title || TYPES_TITLES[type]}`}</Styled.Title>;
-});
-
-ChannelTitle.displayName = 'Channel Title';
+};
 
 //
 
@@ -49,7 +48,6 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
     selected,
     metadata,
     mixer,
-    device,
     midi,
     isMaster
   } = useGetChannelData(data);
@@ -58,6 +56,7 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
     updateChannelTitle,
     updateChannelDevice,
     activateChannelArm,
+    activateSoloChannel,
     updateChannelSelected
   } = useUpdateChannelData(data);
 
@@ -72,6 +71,10 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
     if (!mixer.arm) activateChannelArm();
   }
 
+  const soloChannel = async () => {
+    if (!mixer.solo) activateSoloChannel();
+  }
+
   const selectChannel = async () => {
     if (!selected) updateChannelSelected();
   }
@@ -79,14 +82,24 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
   return (
     <Styled.Container $selected={selected}>
       <div onClick={selectChannel}>
-        <ChannelTitle  isMaster={isMaster} type={metadata.type} index={index} title={metadata.title} />
+        <ChannelTitle isMaster={isMaster} type={metadata.type} index={index} title={metadata.title} />
       </div>
       {
-        !isMaster && (
-        <>
-          { !device.component ? <button onClick={addDevice}>add device</button> : 'device connected' }
-          <InputIndicator midi={midi} />
-          <button onClick={activateMIDI}>{ !mixer.arm ? 'arm' : 'armed' }</button>
+        !isMaster && (<>
+        <Styled.ChannelRow>
+          {/* { !device.component ? <button onClick={addDevice}>add device</button> : 'device connected' } */}
+        </Styled.ChannelRow>
+        <Styled.ChannelRow style={{
+          height: 'fit-content'
+        }}>
+          <Styled.MixerCol>
+            <ButtonSolo onClick={soloChannel} active={mixer.solo} />
+            <ButtonArm onClick={activateMIDI} active={mixer.arm} />
+          </Styled.MixerCol>
+          <Styled.MixerCol>
+            <InputIndicator midi={midi} />
+          </Styled.MixerCol>
+        </Styled.ChannelRow>
         </>)
       }
     </Styled.Container>
