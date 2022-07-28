@@ -11,6 +11,8 @@
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "bootstrap": "^5.2.0-beta1",
+    "fourier": "^0.3.0",
+    "fourier-transform": "^1.1.2",
     "jotai": "^1.7.6",
     "material-colors": "^1.2.6",
     "polished": "^4.2.2",
