@@ -19,20 +19,26 @@ class Oscillator {
   set wave(val: OscillatorType) {
     let real = new Float32Array(SAMPLE_RATE);
     let imag = new Float32Array(SAMPLE_RATE);
-
     // sawtooh
-    for(let x = 1; x < SAMPLE_RATE; x++) {
-      imag[x] = (2 / Math.PI) * (Math.pow(-1, x - 1) / Math.pow(x, 2)) * (Math.PI * x);
-    }
+    // for(let x = 1; x < SAMPLE_RATE; x++) {
+    //   imag[x] = ((2 / Math.PI) * (Math.pow(-1, (x - 1)) / Math.pow(x, 2)) * (Math.PI * x) + 0.5);
+    // }
+
+    // sine
+    // var shift = 2 * Math.PI * 0.5; //0.3 is the phase
+    // real[1] = 0 * Math.cos(shift) - 1 * Math.sin(shift);
+    // imag[1] = 0 * Math.sin(shift) + 1 * Math.cos(shift);
+
+    console.log(real, imag);
 
     // square
     // for(let x = 1; x < SAMPLE_RATE; x+=2) {
     //   imag[x] = (4 / Math.PI) * (1 / Math.pow(x, 2)) * (2 * Math.PI * x)
     // }
+    console.log(fourier.dft(real, imag));
 
     this._node.setPeriodicWave(this._context.createPeriodicWave(real, imag));
 
-    console.log(fourier.dft(real, imag));
 
     // this._node.type = val;
   }
