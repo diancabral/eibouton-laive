@@ -17,27 +17,32 @@ class Oscillator {
   }
 
   set wave(val: OscillatorType) {
-    let real = new Float32Array(SAMPLE_RATE);
-    let imag = new Float32Array(SAMPLE_RATE);
+    let realAxis = new Float32Array(SAMPLE_RATE);
+    let imagAxis = new Float32Array(SAMPLE_RATE);
+
     // sawtooh
-    // for(let x = 1; x < SAMPLE_RATE; x++) {
-    //   imag[x] = ((2 / Math.PI) * (Math.pow(-1, (x - 1)) / Math.pow(x, 2)) * (Math.PI * x) + 0.5);
-    // }
+    for(let x = 1; x < SAMPLE_RATE; x++) {
+      imagAxis[x] = ((2 / Math.PI) * (Math.pow(-1, (x - 1)) / Math.pow(x, 2)) * (Math.PI * x));
+    }
+
+    // var shift = 2 * Math.PI * 0.2;
+    // realAxis[1] = (realAxis[0] * Math.cos(shift)) - (imagAxis[1] * Math.sin(shift));
+    // imagAxis[1] = (realAxis[0] * Math.sin(shift)) + (imagAxis[1] * Math.cos(shift));
 
     // sine
-    // var shift = 2 * Math.PI * 0.5; //0.3 is the phase
-    // real[1] = 0 * Math.cos(shift) - 1 * Math.sin(shift);
+    // var shift = 2 * Math.PI * 0.2; //0.3 is the phase
     // imag[1] = 0 * Math.sin(shift) + 1 * Math.cos(shift);
+    // real[1] = 0 * Math.cos(shift) - 1 * Math.sin(shift);
 
-    console.log(real, imag);
+    // console.log(real, imag);
 
     // square
     // for(let x = 1; x < SAMPLE_RATE; x+=2) {
     //   imag[x] = (4 / Math.PI) * (1 / Math.pow(x, 2)) * (2 * Math.PI * x)
     // }
-    console.log(fourier.dft(real, imag));
+    console.log(fourier.dft(realAxis, imagAxis));
 
-    this._node.setPeriodicWave(this._context.createPeriodicWave(real, imag));
+    this._node.setPeriodicWave(this._context.createPeriodicWave(realAxis, imagAxis));
 
 
     // this._node.type = val;
