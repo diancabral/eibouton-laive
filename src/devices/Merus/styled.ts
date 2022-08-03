@@ -6,7 +6,7 @@ export const Container = styled.div`
     display: flex;
     color: white;
     white-space: nowrap;
-    > *:not(:last-of-type){
+    > *:not(:last-child) {
       margin-right: 4px;
     }
   `}

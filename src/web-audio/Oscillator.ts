@@ -85,12 +85,12 @@ class Oscillator {
     this._node.disconnect();
   }
 
-  play(attack: number = 0, decay: number = 0, sustain?: number, release?: number) {
+  play(attack: number = 0, decay: number = 0, sustain: number = 100, release?: number) {
     this._node.start(this._context.currentTime);
     this._gain.node.gain.cancelScheduledValues(this._context.currentTime);
     this._gain.volume = 0;
     this._gain.node.gain.linearRampToValueAtTime(1, this._context.currentTime + attack / 1000);
-    this._gain.node.gain.linearRampToValueAtTime(0, this._context.currentTime + (attack + decay) / 1000);
+    this._gain.node.gain.linearRampToValueAtTime(sustain / 100, this._context.currentTime + (attack + decay) / 1000);
   }
 
   connectTo(node: AudioNode) {

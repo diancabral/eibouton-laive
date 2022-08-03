@@ -5,16 +5,16 @@ import { theme } from '../../../styled/theme';
 import * as Styled from './styled';
 
 type ADSRProps = {
-  attack: number;
-  decay: number;
-  sustain: number;
-  release: number;
+  attack?: number;
+  decay?: number;
+  sustain?: number;
+  release?: number;
   width: number;
   height: number;
   midi?: MIDIInputType;
 };
 
-export const ADSR = ({ attack = 0, decay = 0, sustain, release = 0, width, height, midi }: ADSRProps) => {
+export const ADSR = ({ attack = 0, decay = 0, sustain = 0, release = 0, width, height, midi }: ADSRProps) => {
   const canvas = useRef<HTMLCanvasElement>(null);
 
   //
@@ -26,11 +26,11 @@ export const ADSR = ({ attack = 0, decay = 0, sustain, release = 0, width, heigh
   };
 
   const miliseconds = useMemo(() => {
-    return Math.max(3500, totalSeconds + 500);
+    return Math.max(1000, totalSeconds + 500 * (totalSeconds / 2000));
   }, [totalSeconds]);
 
   const milisecondsDivisor = useMemo(() => {
-    return miliseconds > 32000 ? 8 : miliseconds > 16000 ? 4 : miliseconds > 8000 ? 2 : 1;
+    return miliseconds > 64000 ? 16 : miliseconds > 32000 ? 8 : miliseconds > 16000 ? 4 : miliseconds > 8000 ? 2 : miliseconds > 4000 ? 1 : miliseconds > 2000 ? 0.5 : 0.25;
   }, [miliseconds]);
 
   const padding = 10;
@@ -40,6 +40,7 @@ export const ADSR = ({ attack = 0, decay = 0, sustain, release = 0, width, heigh
   const pxAttack = padding + milisecondsToPixel(attack);
   const pxDecay = pxAttack + milisecondsToPixel(decay);
   const pxRelease = pxDecay + milisecondsToPixel(release);
+  const pxSustain = canvasHeight - (sustain / 100) * canvasHeight;
 
   //
 
@@ -52,6 +53,7 @@ export const ADSR = ({ attack = 0, decay = 0, sustain, release = 0, width, heigh
 
   const clearCanvasScreen = (context: CanvasRenderingContext2D, scale: number, width: number, height: number) => {
     context.scale(scale, scale);
+    context.fillStyle = 'transparent';
     context.fillRect(0, 0, width, height);
   };
 
@@ -105,7 +107,7 @@ export const ADSR = ({ attack = 0, decay = 0, sustain, release = 0, width, heigh
         context.lineCap = 'round';
         context.strokeStyle = rgba('white', 0.2);
         // draw seconds lines
-        for (let i = 0; i < miliseconds / 1000; i++) {
+        for (let i = 0; i < miliseconds / 1000; i += milisecondsDivisor) {
           if (i % milisecondsDivisor === 0) {
             const x = padding + milisecondsToPixel(i * 1000);
             startLineFrom(context, x, padding);
@@ -114,7 +116,12 @@ export const ADSR = ({ attack = 0, decay = 0, sustain, release = 0, width, heigh
             context.font = '10px Albert Sans';
             context.fillStyle = rgba('white', 0.5);
             context.textAlign = 'center';
-            context.fillText(`${i}s`, x, height);
+            if (i) {
+              const format = i * (i < 1 ? 1000 : 1);
+              context.fillText(`${format}${i < 1 ? 'ms' : 's'}`, x, height);
+            } else {
+              context.fillText('0', x, height);
+            }
           }
         }
 
@@ -127,7 +134,7 @@ export const ADSR = ({ attack = 0, decay = 0, sustain, release = 0, width, heigh
         // draw lines
         startLineFrom(context, padding, canvasHeight);
         drawLineTo(context, pxAttack, padding);
-        drawLineTo(context, pxDecay, padding + 50);
+        drawLineTo(context, pxDecay, pxSustain);
         drawLineTo(context, pxRelease, canvasHeight);
 
         context.stroke();
@@ -135,8 +142,8 @@ export const ADSR = ({ attack = 0, decay = 0, sustain, release = 0, width, heigh
         // draw circle time
         const elapsedTime = +new Date() - startTime;
 
-        let circleX = 0;
-        let circleY = 0;
+        let circleX = pxDecay;
+        let circleY = pxSustain;
 
         if (midi?.notesOn.length) {
           if (elapsedTime < attack) {
@@ -146,7 +153,7 @@ export const ADSR = ({ attack = 0, decay = 0, sustain, release = 0, width, heigh
           } else if (elapsedTime < attack + decay) {
             const multiplier = (elapsedTime - attack) / decay;
             circleX = padding + milisecondsToPixel(attack) + milisecondsToPixel(decay) * multiplier;
-            circleY = padding + 50 * multiplier;
+            circleY = padding + (pxSustain - padding) * multiplier;
           }
           drawCircleNote(context, circleX, circleY);
         }
@@ -154,13 +161,23 @@ export const ADSR = ({ attack = 0, decay = 0, sustain, release = 0, width, heigh
     }
   };
 
+  const [drawInterval, setDrawInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+
   useEffect(() => {
-    let drawInterval: ReturnType<typeof setInterval> | null = null;
-    drawInterval = setInterval(() => draw(), fps);
-    return () => {
+    if (midi?.notesOn.length) {
+      setDrawInterval((current) => {
+        if (current) clearInterval(current);
+        return setInterval(() => draw(), fps);
+      });
+    } else {
+      draw();
       if (drawInterval) clearInterval(drawInterval);
-    };
+    }
   }, [midi, attack, decay, sustain, release]);
+
+  // useEffect(() => {
+  //   draw();
+  // }, [attack, decay, sustain, release]);
 
   return (
     <Styled.Container>

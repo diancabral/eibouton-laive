@@ -7,11 +7,13 @@ type KnobProps = {
   max?: number;
   value?: number;
   mode?: string;
-  step?: number;
+  theme?: Styled.KnobThemeType;
   format?: (value: number) => string;
-}
+  step?: (value: number) => number;
+  onChange: (value: number) => unknown;
+};
 
-export const Knob = memo(({ min = 0, max = 100, value = 0, mode = 'default', step = 1, format }: KnobProps) => {
+export const Knob = memo(({ min = 0, max = 100, value = 0, mode = 'default', step = () => 1, format, theme, onChange }: KnobProps) => {
   const [currentValue, setCurrentValue] = useState(value);
   const rotate = useMemo(() => {
     const total = max - min;
@@ -23,10 +25,13 @@ export const Knob = memo(({ min = 0, max = 100, value = 0, mode = 'default', ste
 
   const [mouseActive, setMouseActive] = useState(false);
   const [clientYStart, setClientYStart] = useState(0);
+  const [, setClientYOld] = useState(0);
+  const [valueStart, setValueStart] = useState(0);
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     setMouseActive(true);
     setClientYStart(e.clientY);
+    setValueStart(currentValue);
   };
 
   const handleMouseUp = () => {
@@ -39,10 +44,28 @@ export const Knob = memo(({ min = 0, max = 100, value = 0, mode = 'default', ste
   const handleMouseMove = (e: MouseEvent) => {
     if (mouseActive) {
       e.preventDefault();
-      const distanceY = (clientYStart - e.clientY) * step;
-      setCurrentValue(Math.min(Math.max(currentValue + distanceY, min), max));
+      setClientYOld((current) => {
+        let isSum = false;
+        if (current !== e.clientY) {
+          if (current > e.clientY) isSum = true;
+          setCurrentValue((current) => {
+            let distanceY = current + (clientYStart - e.clientY);
+            const stepValue = step(distanceY);
+            return Math.min(Math.max(isSum ? current + stepValue : current - stepValue, min), max);
+          });
+        }
+        return e.clientY;
+      });
     }
   };
+
+  useEffect(() => {
+    onChange(currentValue);
+  }, [currentValue]);
+
+  useEffect(() => {
+    setCurrentValue(value);
+  }, [value]);
 
   useEffect(() => {
     window.addEventListener('mouseup', handleMouseUp);
@@ -55,7 +78,7 @@ export const Knob = memo(({ min = 0, max = 100, value = 0, mode = 'default', ste
 
   return (
     <Styled.Container>
-      <Styled.Circle $rotate={rotate} onMouseDown={(e) => handleMouseDown(e)} />
+      <Styled.Circle $rotate={rotate} onMouseDown={(e) => handleMouseDown(e)} $theme={theme} />
       <Styled.Output>{format?.(currentValue) ?? currentValue}</Styled.Output>
     </Styled.Container>
   );

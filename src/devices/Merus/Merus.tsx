@@ -50,6 +50,8 @@ export const Merus = ({ data }: MerusType) => {
   const wave = useMemo(() => config.wave, [config]);
   const attack = useMemo(() => config.attack, [config]);
   const decay = useMemo(() => config.decay, [config]);
+  const sustain = useMemo(() => config.sustain, [config]);
+  const release = useMemo(() => config.release, [config]);
 
   const updateOscilattorsWave = (wave: OscillatorType) => {
     setCurrentOscillators((current) => {
@@ -98,7 +100,7 @@ export const Merus = ({ data }: MerusType) => {
         setLastKey(key);
 
         oscillator.connectTo(master as GainNode);
-        oscillator.play(0.5, 300);
+        oscillator.play(attack, decay, sustain);
       }
     } else {
       stopAllOscillators();
