@@ -7,13 +7,12 @@ export const defaultChannel: ChannelMetadata = {
     title: '',
   },
   device: {
-    node: null,
-    config: null,
+    config: {},
   },
   midi: {
     input: {
       notesOn: [],
-      notesOff: 0
+      notesOff: 0,
     },
     messages: [
       {
@@ -34,5 +33,5 @@ export const defaultChannel: ChannelMetadata = {
     arm: true,
     gain: 0,
     pan: 0,
-  }
+  },
 };

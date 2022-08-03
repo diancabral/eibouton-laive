@@ -1,14 +1,15 @@
 import { ReactElement } from 'react';
 import { PrimitiveAtom } from 'jotai';
-import Oscillator from '../web-audio/Oscillator';
 import { MIDIInputType } from '../store/midi/types';
+import { MerusConfig } from '../devices/Merus/types';
 
 export type ChannelTrackType = 'midi' | 'audio' | 'master';
 
+export type ChannelDeviceConfig = MerusConfig;
+
 export type ChannelDevice = {
   component?: ReactElement | null;
-  node?: Oscillator | null;
-  config?: null;
+  config: ChannelDeviceConfig;
 };
 
 export type ChannelMIDIMessages = {
@@ -23,7 +24,7 @@ export type ChannelMIDIMessages = {
 };
 
 export type ChannelMetadata = {
-  selected: boolean,
+  selected: boolean;
   metadata: {
     /** Set channel to MIDI, Audio or Master output */
     type: ChannelTrackType;
@@ -36,10 +37,10 @@ export type ChannelMetadata = {
   device: ChannelDevice;
   /** MIDI metadata to send to an audio device and to the arrangement screen */
   midi: {
-    input: MIDIInputType
-    messages?: ChannelMIDIMessages[]
+    input: MIDIInputType;
+    messages?: ChannelMIDIMessages[];
   };
-  mixer : {
+  mixer: {
     /** Channel Volume */
     gain?: number;
     /** Channel Panorama */
@@ -50,7 +51,7 @@ export type ChannelMetadata = {
     active?: boolean;
     /** Solo channel to listen audio output regardless */
     solo?: boolean;
-  }
+  };
 };
 
 export type ChannelType = {

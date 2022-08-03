@@ -1,27 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Oscillator from '../../web-audio/Oscillator';
 import { ChannelType } from '../../types';
 import { useGetMIDIMessages } from './hooks/useGetMIDIMessages';
 import { useGetAudioGlobal } from '../../store/audio/hooks/useGetAudioGlobal';
+import { useGetDeviceConfig } from './hooks/useGetDeviceConfig';
 
 type MerusType = {
   data: ChannelType;
-  type?: OscillatorType;
-}
+};
 
-export const Merus = ({ data, type = 'sawtooth' }: MerusType) => {
+export const Merus = ({ data }: MerusType) => {
   const { context, master } = useGetAudioGlobal();
   const { midi } = useGetMIDIMessages(data);
+  const { config } = useGetDeviceConfig(data);
 
-  const [, setCurrentOscillators] = useState<{
-    oscillators: Oscillator[],
-    key: number,
-  }[]>([]);
+  const [, setCurrentOscillators] = useState<
+    {
+      oscillators: Oscillator[];
+      key: number;
+    }[]
+  >([]);
+
+  //
 
   const [lastKey, setLastKey] = useState(0);
 
   const stopOscillator = (key: number) => {
-    setCurrentOscillators(current => {
+    setCurrentOscillators((current) => {
       const group = current.find((val) => val.key === key);
       if (group) {
         group.oscillators.forEach((oscillator) => {
@@ -31,17 +36,34 @@ export const Merus = ({ data, type = 'sawtooth' }: MerusType) => {
       }
       return current;
     });
-  }
+  };
 
   const stopAllOscillators = () => {
-    setCurrentOscillators(current => {
+    setCurrentOscillators((current) => {
       current.forEach(({ oscillators }) => oscillators.forEach((oscilattor) => oscilattor.stop()));
       return current;
     });
-  }
+  };
+
+  //
+
+  const wave = useMemo(() => config.wave, [config]);
+  const attack = useMemo(() => config.attack, [config]);
+  const decay = useMemo(() => config.decay, [config]);
+
+  const updateOscilattorsWave = (wave: OscillatorType) => {
+    setCurrentOscillators((current) => {
+      current.forEach(({ oscillators }) => oscillators.forEach((oscilattor) => (oscilattor.wave = wave)));
+      return current;
+    });
+  };
+
+  useEffect(() => {
+    updateOscilattorsWave(wave as OscillatorType);
+  }, [wave]);
 
   const monophonic = true;
-  const portamento = .05;
+  const portamento = 0;
   const voices = 1;
   // const detune = 0;
 
@@ -50,7 +72,7 @@ export const Merus = ({ data, type = 'sawtooth' }: MerusType) => {
       for (let i = 0; i < voices; i++) {
         const oscillator = new Oscillator(context as AudioContext);
 
-        oscillator.wave = type;
+        oscillator.wave = (wave as OscillatorType) || 'sawtooth';
         // oscillator.fine = 0 + oscillator.calcDetuneFine(i, voices, detune);
 
         const key = midi.notesOn.map((val) => val.key).slice(-1)[0] || 0;
@@ -59,21 +81,24 @@ export const Merus = ({ data, type = 'sawtooth' }: MerusType) => {
         if (voices === 1) stopOscillator(key);
         if (monophonic && lastKey) stopOscillator(lastKey);
 
-        setCurrentOscillators(current => {
-          const index = current.findIndex(val => val.key === key);
+        setCurrentOscillators((current) => {
+          const index = current.findIndex((val) => val.key === key);
           if (index > -1) {
             current[index].oscillators.push(oscillator);
             return current;
           }
-          return [...current, {
-            oscillators: [oscillator],
-            key
-          }];
+          return [
+            ...current,
+            {
+              oscillators: [oscillator],
+              key,
+            },
+          ];
         });
         setLastKey(key);
 
         oscillator.connectTo(master as GainNode);
-        oscillator.play();
+        oscillator.play(0.5, 300);
       }
     } else {
       stopAllOscillators();
@@ -86,5 +111,5 @@ export const Merus = ({ data, type = 'sawtooth' }: MerusType) => {
 
   //
 
-  return <></>
-}
+  return <></>;
+};

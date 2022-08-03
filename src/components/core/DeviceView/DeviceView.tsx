@@ -18,46 +18,43 @@ export const InputIndicator = () => {
     <Styled.InputIndicator>
       <MIDIIndicator data={midi} small />
     </Styled.InputIndicator>
-  )
-}
+  );
+};
 
 export const DeviceView = () => {
   const currentChannel = useAtomValue(CurrentChannel);
 
   const device = useGetCurrentChannelDevice();
 
-  const {
-    updateChannelDevice,
-  } = useUpdateChannelData({ channel: currentChannel });
+  const { updateChannelDevice } = useUpdateChannelData({ channel: currentChannel });
 
   const addDevice = () => {
     updateChannelDevice(<Merus data={{ channel: currentChannel }} />);
-  }
+  };
 
   useEffect(() => {
     addDevice();
-  }, [])
+  }, []);
 
   return (
-    <Wrapper theme="dark">
+    <Wrapper theme="dark" key={currentChannel.toString()}>
       <Styled.Container>
         <InputIndicator />
-        { !device.component && (
-        <Styled.Message>
-          Drop an Sample here or&nbsp;
-          <Button onClick={addDevice}>add a Merus Synthesizer</Button>
-        </Styled.Message>
-        )}
-        { device.component && (
-        <>
-          <DeviceWrapper title="Merus Synthesizer">
-            <MerusInterface />
-          </DeviceWrapper>
+        {!device.component && (
           <Styled.Message>
-            Drop Audio Effects here
+            Drop an Sample here or&nbsp;
+            <Button onClick={addDevice}>add a Merus Synthesizer</Button>
           </Styled.Message>
-        </>)}
+        )}
+        {device.component && (
+          <>
+            <DeviceWrapper title="Merus Synthesizer">
+              <MerusInterface data={{ channel: currentChannel }} />
+            </DeviceWrapper>
+            <Styled.Message>Drop Audio Effects here</Styled.Message>
+          </>
+        )}
       </Styled.Container>
     </Wrapper>
   );
-}
+};

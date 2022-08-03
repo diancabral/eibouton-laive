@@ -1,68 +1,79 @@
 import { ReactElement } from 'react';
 import { useUpdateAtom } from 'jotai/utils';
 import { useUpdateCurrentChannel } from './useUpdateCurrentChannel';
-import { ChannelType } from '../../../types';
+import { ChannelDeviceConfig, ChannelType } from '../../../types';
 
 export const useUpdateChannelData = (data: ChannelType) => {
   const updateChannelOptions = useUpdateAtom(data.channel);
   const { setCurrentChannel } = useUpdateCurrentChannel();
 
-  const updateChannelDevice = (component: ReactElement) => {
-    updateChannelOptions(current => ({
+  const updateChannelDeviceConfig = (config: ChannelDeviceConfig) => {
+    updateChannelOptions((current) => ({
       ...current,
       device: {
         ...current.device,
-        component
-      }
+        config,
+      },
+    }));
+  };
+
+  const updateChannelDevice = (component: ReactElement) => {
+    updateChannelOptions((current) => ({
+      ...current,
+      device: {
+        ...current.device,
+        component,
+      },
     }));
     activateChannelArm();
   };
 
-  const updateChannelTitle = (title: string) => updateChannelOptions(current => ({
-    ...current,
-    metadata: {
-      ...current.metadata,
-      title,
-    },
-  }));
+  const updateChannelTitle = (title: string) =>
+    updateChannelOptions((current) => ({
+      ...current,
+      metadata: {
+        ...current.metadata,
+        title,
+      },
+    }));
 
   const updateChannelSelected = () => {
     setCurrentChannel(data, false);
-    updateChannelOptions(current => ({
+    updateChannelOptions((current) => ({
       ...current,
-      selected: true
+      selected: true,
     }));
   };
 
   const activateChannelArm = () => {
     setCurrentChannel(data);
-    updateChannelOptions(current => ({
+    updateChannelOptions((current) => ({
       ...current,
       selected: true,
       mixer: {
         ...current.mixer,
-        arm: true
-      }
+        arm: true,
+      },
     }));
   };
 
   const deactivateChannelArm = () => {
-    updateChannelOptions(current => ({
+    updateChannelOptions((current) => ({
       ...current,
       mixer: {
         ...current.mixer,
-        arm: false
-      }
+        arm: false,
+      },
     }));
   };
 
   const activateSoloChannel = () => {
-    updateChannelOptions(current => ({
+    updateChannelOptions((current) => ({
       ...current,
       mixer: {
         ...current.mixer,
-        solo: true
-      }
+        solo: true,
+      },
     }));
   };
 
@@ -73,5 +84,6 @@ export const useUpdateChannelData = (data: ChannelType) => {
     deactivateChannelArm,
     activateSoloChannel,
     updateChannelSelected,
-  }
-}
+    updateChannelDeviceConfig,
+  };
+};
