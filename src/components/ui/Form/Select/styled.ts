@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { space, SpaceProps } from 'styled-system';
 import { Button } from '../../Button/styled';
 
 export type FormSelectThemes = 'black';
@@ -7,14 +8,17 @@ type ValueProps = {
   $theme?: FormSelectThemes;
 };
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.div<SpaceProps>`
   position: relative;
+  ${space}
 `;
 
 export const Value = styled(Button)<ValueProps>`
   ${({ theme, $theme }) => css`
+    width: 70px;
     padding: 0 2px;
     background: ${$theme === 'black' && theme.colors.black};
+    justify-content: space-between;
     svg {
       margin-top: -2px;
       margin-left: 4px;
@@ -38,6 +42,7 @@ export const Row = styled.ul`
     list-style: none;
     padding: 0;
     margin: 0;
+    z-index: 2;
   `}
 `;
 

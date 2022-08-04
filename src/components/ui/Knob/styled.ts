@@ -2,7 +2,6 @@ import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
   position: relative;
-  width: fit-content;
   padding-bottom: 3px;
   display: flex;
   flex-direction: column;
@@ -62,10 +61,29 @@ export const Circle = styled.div.attrs<CircleProps>((props) => ({
     }
   `};
 `;
+
 export const Output = styled.output<{ $handler: boolean }>`
   ${({ theme, $handler }) => css`
-    text-align: center;
+    width: 100%;
     color: ${$handler ? theme.colors.orange[500] : 'white'};
+    text-align: ${!$handler && 'center'};
     cursor: ns-resize;
+  `}
+`;
+
+export const Input = styled.input<{ $handler: boolean }>`
+  ${({ theme, $handler }) => css`
+    width: 100%;
+    height: 12px;
+    color: ${$handler ? theme.colors.orange[500] : 'white'};
+    box-shadow: 0 0 0 1px white;
+    background: none;
+    outline: none;
+    border: none;
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
   `}
 `;

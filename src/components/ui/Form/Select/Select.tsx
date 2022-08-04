@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { SpaceProps } from 'styled-system';
 import { Icon } from '../../Icon/Icon';
-import { FormLabel } from '../Label/Label';
 import * as Styled from './styled';
 
 type FormSelectOption = {
@@ -14,9 +14,9 @@ type FormSelectProps = {
   options: FormSelectOption[];
   value: string;
   onSelect: (value: string) => unknown;
-};
+} & SpaceProps;
 
-export const FormSelect = ({ label, theme, options, onSelect, value }: FormSelectProps) => {
+export const FormSelect = ({ label, theme, options, onSelect, value, ...styledSystem }: FormSelectProps) => {
   const [active, setActive] = useState(false);
   const [currentValue, setCurrentValue] = useState(value);
 
@@ -40,23 +40,20 @@ export const FormSelect = ({ label, theme, options, onSelect, value }: FormSelec
   }, [active]);
 
   return (
-    <div>
-      {label && <FormLabel>{label}</FormLabel>}
-      <Styled.Wrapper>
-        <Styled.Value $theme={theme} onMouseDown={(e) => handleSelectClick(e)}>
-          {(getCurrentValue[0] || {}).label}
-          <Icon name="play_arrow" />
-        </Styled.Value>
-        {active && (
-          <Styled.Row>
-            {options.map((val) => (
-              <Styled.List key={val.value} onMouseDown={() => handleOptionSelect(val.value)}>
-                {val.label}
-              </Styled.List>
-            ))}
-          </Styled.Row>
-        )}
-      </Styled.Wrapper>
-    </div>
+    <Styled.Wrapper {...styledSystem}>
+      <Styled.Value $theme={theme} onMouseDown={(e) => handleSelectClick(e)}>
+        {(getCurrentValue[0] || {}).label}
+        <Icon name="play_arrow" />
+      </Styled.Value>
+      {active && (
+        <Styled.Row>
+          {options.map((val) => (
+            <Styled.List key={val.value} onMouseDown={() => handleOptionSelect(val.value)}>
+              {val.label}
+            </Styled.List>
+          ))}
+        </Styled.Row>
+      )}
+    </Styled.Wrapper>
   );
 };

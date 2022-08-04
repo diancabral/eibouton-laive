@@ -93,44 +93,48 @@ export const Merus = ({ data }: MerusType) => {
   const voices = 1;
   // const detune = 0;
 
+  const midiNewNote = useMemo(() => {
+    return midi.notesOn.map((val) => val.key).slice(-1)[0] || 0;
+  }, [midi.notesOn]);
+
   useEffect(() => {
     if (midi.notesOn.length) {
-      for (let i = 0; i < voices; i++) {
-        const oscillator = new Oscillator(context as AudioContext);
+      // for (let i = 0; i < voices; i++) {
+      const oscillator = new Oscillator(context as AudioContext);
 
-        oscillator.wave = (wave as OscillatorType) || 'sawtooth';
-        oscillator.fine = fine as number;
-        // oscillator.fine = 0 + oscillator.calcDetuneFine(i, voices, detune);
+      oscillator.wave = (wave as OscillatorType) || 'sawtooth';
+      oscillator.fine = fine as number;
+      // oscillator.fine = 0 + oscillator.calcDetuneFine(i, voices, detune);
 
-        const key = midi.notesOn.map((val) => val.key).slice(-1)[0] || 0;
-        oscillator.setKey(key + (octave || 0) * 12, lastKey, (portamento || 0) / 1000);
+      const key = midiNewNote;
+      oscillator.setKey(key + (octave || 0) * 12, lastKey, (portamento || 0) / 1000);
 
-        if (voices === 1) stopOscillator(key);
-        if (monophonic && lastKey) stopOscillator(lastKey);
+      if (voices === 1) stopOscillator(key);
+      if (monophonic && lastKey) stopOscillator(lastKey);
 
-        setCurrentOscillators((current) => {
-          const index = current.findIndex((val) => val.key === key);
-          if (index > -1) {
-            current[index].oscillators.push(oscillator);
-            return current;
-          }
-          return [
-            ...current,
-            {
-              oscillators: [oscillator],
-              key,
-            },
-          ];
-        });
-        setLastKey(key);
+      setCurrentOscillators((current) => {
+        const index = current.findIndex((val) => val.key === key);
+        if (index > -1) {
+          current[index].oscillators.push(oscillator);
+          return current;
+        }
+        return [
+          ...current,
+          {
+            oscillators: [oscillator],
+            key,
+          },
+        ];
+      });
+      setLastKey(key);
 
-        oscillator.connectTo(master as GainNode);
-        oscillator.play(attack, decay, sustain);
-      }
+      oscillator.connectTo(master as GainNode);
+      oscillator.play(attack, decay, sustain);
+      // }
     } else {
       stopAllOscillators();
     }
-  }, [midi.notesOn]);
+  }, [midiNewNote]);
 
   useEffect(() => {
     stopOscillator(midi.notesOff);

@@ -25,3 +25,12 @@ export const BlockHeader = styled.div`
     }
   `}
 `;
+
+export const EnvelopeContainer = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    > *:not(:last-child) {
+      margin-right: 5px;
+    }
+  `}
+`;

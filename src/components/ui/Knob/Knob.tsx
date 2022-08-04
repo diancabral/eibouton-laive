@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMouseMoveHandler } from './hooks/useMouseMoveHandler';
 
 import * as Styled from './styled';
@@ -33,12 +33,12 @@ export const Knob = memo(({ min = 0, max = 100, value = 0, knob = true, step = (
     setClientYStart(e.clientY);
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     if (mouseActive) {
       setMouseActive(false);
       setClientYStart(0);
     }
-  };
+  }, [mouseActive]);
 
   useMouseMoveHandler((e: MouseEvent) => {
     if (mouseActive) {
@@ -62,19 +62,73 @@ export const Knob = memo(({ min = 0, max = 100, value = 0, knob = true, step = (
     setCurrentValue(value);
   }, [value]);
 
+  const editInput = useRef<HTMLInputElement>(null);
+  const [editActive, setEditActive] = useState(false);
+  const [editValue, setEditValue] = useState(0);
+
+  const openEdit = () => {
+    setEditValue(currentValue);
+    setEditActive(true);
+  };
+
+  const handleEditEnter = useCallback(
+    (e: KeyboardEvent) => {
+      if (editActive && e.key === 'Enter') {
+        setCurrentValue(editValue);
+        setEditActive(false);
+      }
+    },
+    [editValue, editActive]
+  );
+
+  const handleEditValueEdit = (value: string) => {
+    setEditValue(Math.min(Math.max(parseFloat(value), min), max));
+  };
+
   useEffect(() => {
-    window.addEventListener('mouseup', handleMouseUp);
+    if (mouseActive) window.addEventListener('mouseup', handleMouseUp);
     return () => {
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [mouseActive]);
+  }, [mouseActive, handleMouseUp]);
+
+  useEffect(() => {
+    if (editActive) editInput.current?.select();
+  }, [editActive]);
+
+  useEffect(() => {
+    if (editActive) {
+      window.addEventListener('keydown', handleEditEnter);
+      window.addEventListener('mousedown', () => setEditActive(false));
+    }
+    return () => {
+      window.removeEventListener('keydown', handleEditEnter);
+      window.removeEventListener('mousedown', () => setEditActive(false));
+    };
+  }, [editActive, handleEditEnter]);
 
   return (
     <Styled.Container>
       {knob && <Styled.Circle $rotate={rotate} onMouseDown={(e) => handleMouseDown(e)} $theme={theme} />}
-      <Styled.Output $handler={!knob} onMouseDown={(e) => handleMouseDown(e)}>
-        {format?.(currentValue) ?? currentValue}
-      </Styled.Output>
+      {!editActive && (
+        <Styled.Output $handler={!knob} onMouseDown={(e) => handleMouseDown(e)} onDoubleClick={() => openEdit()}>
+          {format?.(currentValue) ?? currentValue}
+        </Styled.Output>
+      )}
+      {editActive && (
+        <Styled.Input
+          ref={editInput}
+          type="number"
+          min={min}
+          max={max}
+          step={step(currentValue)}
+          $handler={!knob}
+          onDoubleClick={() => openEdit()}
+          onMouseDown={(e) => e.stopPropagation()}
+          value={!isNaN(editValue) ? editValue : ''}
+          onChange={(e) => handleEditValueEdit(e.target.value)}
+        />
+      )}
     </Styled.Container>
   );
 });

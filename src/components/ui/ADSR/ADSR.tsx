@@ -12,7 +12,7 @@ type ADSRProps = {
   release?: number;
   width: number;
   height: number;
-  midi?: MIDIInputType;
+  midi: MIDIInputType;
 };
 
 export const ADSR = ({ attack = 0, decay = 0, sustain = 0, release = 0, width, height, midi }: ADSRProps) => {
@@ -114,8 +114,8 @@ export const ADSR = ({ attack = 0, decay = 0, sustain = 0, release = 0, width, h
             startLineFrom(context, x, padding);
             drawLineTo(context, x, canvasHeight);
             context.stroke();
-            context.font = '10px Albert Sans';
-            context.fillStyle = rgba('white', 0.5);
+            context.font = '700 10px Albert Sans';
+            context.fillStyle = rgba('white', 0.3);
             context.textAlign = 'center';
             if (i) {
               const format = i * (i < 1 ? 1000 : 1);
@@ -166,9 +166,13 @@ export const ADSR = ({ attack = 0, decay = 0, sustain = 0, release = 0, width, h
     draw();
   }, fps);
 
+  const midiNewNote = useMemo(() => {
+    return midi.notesOn.map((val) => val.key).slice(-1)[0] || 0;
+  }, [midi.notesOn]);
+
   useEffect(() => {
     setStartTime(+new Date());
-  }, [midi]);
+  }, [midiNewNote]);
 
   return (
     <Styled.Container>
