@@ -33,7 +33,7 @@ export const DeviceView = () => {
       wave: 'sawtooth',
       attack: 0.5,
       decay: 250,
-      sustain: 100,
+      sustain: -100,
       release: 0.15,
     });
   };

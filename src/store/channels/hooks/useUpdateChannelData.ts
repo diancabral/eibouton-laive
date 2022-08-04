@@ -12,7 +12,10 @@ export const useUpdateChannelData = (data: ChannelType) => {
       ...current,
       device: {
         ...current.device,
-        config,
+        config: {
+          ...current.device.config,
+          ...config,
+        },
       },
     }));
   };

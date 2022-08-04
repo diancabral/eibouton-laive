@@ -96,7 +96,7 @@ class Oscillator {
     this._gain.node.gain.cancelScheduledValues(this._context.currentTime);
     this._gain.volume = 0;
     this._gain.node.gain.linearRampToValueAtTime(1, this._context.currentTime + attack / 1000);
-    this._gain.node.gain.linearRampToValueAtTime(sustain / 100, this._context.currentTime + (attack + decay) / 1000);
+    this._gain.node.gain.linearRampToValueAtTime(sustain / -100, this._context.currentTime + (attack + decay) / 1000);
   }
 
   connectTo(node: AudioNode) {

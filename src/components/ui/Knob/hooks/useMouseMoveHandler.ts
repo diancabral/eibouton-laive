@@ -7,11 +7,12 @@ export const useMouseMoveHandler = (callback: any, active: boolean) => {
     savedCallback.current = callback;
   }, [callback]);
 
+  const executeCallback = (e: MouseEvent) => {
+    savedCallback.current(e);
+  };
+
   useEffect(() => {
-    if (active) {
-      window.addEventListener('mousemove', (e) => savedCallback.current(e));
-    } else {
-      window.removeEventListener('mousemove', (e) => savedCallback.current(e));
-    }
+    if (active) window.addEventListener('mousemove', executeCallback);
+    return () => window.removeEventListener('mousemove', executeCallback);
   }, [active]);
 };

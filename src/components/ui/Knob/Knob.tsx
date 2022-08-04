@@ -40,27 +40,30 @@ export const Knob = memo(({ min = 0, max = 100, value = 0, knob = true, step = (
     }
   }, [mouseActive]);
 
-  useMouseMoveHandler((e: MouseEvent) => {
-    if (mouseActive) {
-      e.preventDefault();
-      let isSum = false;
-      if (clientYOld !== e.clientY) {
-        if (clientYOld > e.clientY) isSum = true;
-        let distanceY = currentValue + (clientYStart - e.clientY);
-        const stepValue = step(distanceY);
-        setCurrentValue(Math.min(Math.max(isSum ? currentValue + stepValue : currentValue - stepValue, min), max));
-      }
-      setClientYOld(e.clientY);
-    }
-  }, mouseActive);
+  const callback = useRef<any>();
 
-  useEffect(() => {
-    onChange(currentValue);
-  }, [currentValue]);
+  useMouseMoveHandler((e: MouseEvent) => {
+    e.preventDefault();
+    let isSum = false;
+    if (clientYOld !== e.clientY) {
+      if (clientYOld > e.clientY) isSum = true;
+      let distanceY = currentValue + (clientYStart - e.clientY);
+      const stepValue = step(distanceY);
+      const newValue = Math.min(Math.max(isSum ? currentValue + stepValue : currentValue - stepValue, min), max);
+      callback.current(newValue);
+      setCurrentValue(newValue);
+    }
+    setClientYOld(e.clientY);
+  }, mouseActive);
 
   useEffect(() => {
     setCurrentValue(value);
   }, [value]);
+
+  useEffect(() => {
+    console.log(1);
+    callback.current = onChange;
+  }, [onChange]);
 
   const editInput = useRef<HTMLInputElement>(null);
   const [editActive, setEditActive] = useState(false);
@@ -74,11 +77,13 @@ export const Knob = memo(({ min = 0, max = 100, value = 0, knob = true, step = (
   const handleEditEnter = useCallback(
     (e: KeyboardEvent) => {
       if (editActive && e.key === 'Enter') {
-        setCurrentValue(editValue);
+        const value = !isNaN(editValue) ? editValue : currentValue;
+        setCurrentValue(value);
+        onChange(value);
         setEditActive(false);
       }
     },
-    [editValue, editActive]
+    [editActive, editValue, currentValue, onChange]
   );
 
   const handleEditValueEdit = (value: string) => {

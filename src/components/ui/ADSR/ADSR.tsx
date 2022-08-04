@@ -41,7 +41,7 @@ export const ADSR = ({ attack = 0, decay = 0, sustain = 0, release = 0, width, h
   const pxAttack = padding + milisecondsToPixel(attack);
   const pxDecay = pxAttack + milisecondsToPixel(decay);
   const pxRelease = pxDecay + milisecondsToPixel(release);
-  const pxSustain = canvasHeight - ((canvasHeight - padding) * sustain) / 100;
+  const pxSustain = padding + (-(canvasHeight - padding) * sustain) / 100;
 
   //
 

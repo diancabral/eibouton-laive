@@ -1,7 +1,7 @@
+import { useCallback } from 'react';
 import { ADSR } from '../../components/ui/ADSR/ADSR';
 import { FormLabel } from '../../components/ui/Form/Label/Label';
 import { FormSelect } from '../../components/ui/Form/Select/Select';
-import { Value } from '../../components/ui/Form/Select/styled';
 import { Knob } from '../../components/ui/Knob/Knob';
 import { Wrapper } from '../../components/ui/Wrapper/Wrapper';
 import { useGetChannelData } from '../../store/channels/hooks/useGetChannelData';
@@ -19,9 +19,8 @@ export const MerusInterface = ({ data }: MerusInterfaceProps) => {
 
   const { updateChannelDeviceConfig } = useUpdateChannelData(data);
 
-  const updateDeviceConfig = (value: number | string, stage: string) => {
+  const updateDeviceConfig = (stage: string, value: number | string) => {
     updateChannelDeviceConfig({
-      ...device.config,
       [stage]: value,
     });
   };
@@ -62,7 +61,7 @@ export const MerusInterface = ({ data }: MerusInterfaceProps) => {
                   min={0}
                   max={32000}
                   value={device.config.attack}
-                  onChange={(e) => updateDeviceConfig(e, 'attack')}
+                  onChange={updateDeviceConfig.bind(this, 'attack')}
                   step={milisecondsKnobStep}
                   format={formatMiliseconds}
                 />
@@ -75,14 +74,14 @@ export const MerusInterface = ({ data }: MerusInterfaceProps) => {
                   min={0}
                   max={32000}
                   value={device.config.decay}
-                  onChange={(e) => updateDeviceConfig(e, 'decay')}
+                  onChange={updateDeviceConfig.bind(this, 'decay')}
                   step={milisecondsKnobStep}
                   format={formatMiliseconds}
                 />
               </div>
               <div>
                 <FormLabel>Sustain</FormLabel>
-                <Knob knob={false} theme="light" min={0} max={100} step={(e) => 1} format={(e) => e.toFixed(1)} value={device.config.sustain} onChange={(e) => updateDeviceConfig(e, 'sustain')} />
+                <Knob knob={false} theme="light" min={-100} max={0} step={(e) => 1} format={formatDB} value={device.config.sustain} onChange={updateDeviceConfig.bind(this, 'sustain')} />
               </div>
               <div>
                 <FormLabel>Release</FormLabel>
@@ -92,7 +91,7 @@ export const MerusInterface = ({ data }: MerusInterfaceProps) => {
                   min={0}
                   max={32000}
                   value={device.config.release}
-                  onChange={(e) => updateDeviceConfig(e, 'release')}
+                  onChange={updateDeviceConfig.bind(this, 'release')}
                   step={milisecondsKnobStep}
                   format={formatMiliseconds}
                 />
@@ -123,27 +122,27 @@ export const MerusInterface = ({ data }: MerusInterfaceProps) => {
                     },
                   ]}
                   value={device.config.wave || 'sawtooth'}
-                  onSelect={(e) => updateDeviceConfig(e, 'wave')}
+                  onSelect={updateDeviceConfig.bind(this, 'wave')}
                   mb={1}
                 />
               </div>
               <Styled.EnvelopeContainer>
                 <div>
                   <FormLabel>Octave</FormLabel>
-                  <Knob knob={false} theme="light" min={-3} max={3} onChange={(e) => updateDeviceConfig(e, 'octave')} />
+                  <Knob knob={false} theme="light" min={-3} max={3} onChange={updateDeviceConfig.bind(this, 'octave')} />
                 </div>
                 <div>
                   <FormLabel>Fine</FormLabel>
-                  <Knob knob={false} theme="light" min={-100} max={100} onChange={(e) => updateDeviceConfig(e, 'fine')} />
+                  <Knob knob={false} theme="light" min={-100} max={100} onChange={updateDeviceConfig.bind(this, 'fine')} />
                 </div>
               </Styled.EnvelopeContainer>
               <div>
                 <FormLabel>Glide</FormLabel>
-                <Knob knob={false} theme="light" min={0} max={100} onChange={(e) => updateDeviceConfig(e, 'portamento')} />
+                <Knob knob={false} theme="light" min={0} max={100} onChange={updateDeviceConfig.bind(this, 'portamento')} format={formatMiliseconds} />
               </div>
               <div>
-                <FormLabel>Volume</FormLabel>
-                <Knob knob={false} theme="light" min={-100} max={0} onChange={(e) => updateDeviceConfig(e, 'fine')} format={formatDB} />
+                <FormLabel>Vol &gt; Output</FormLabel>
+                <Knob knob={false} theme="light" min={-100} max={0} onChange={updateDeviceConfig.bind(this, 'fine')} format={formatDB} />
               </div>
             </div>
           </Styled.EnvelopeContainer>
@@ -151,7 +150,7 @@ export const MerusInterface = ({ data }: MerusInterfaceProps) => {
       </Wrapper>
       <Wrapper theme="mid-dark" direction="column">
         <FormLabel>Output</FormLabel>
-        <Knob theme="black" min={-100} max={0} onChange={(e) => updateDeviceConfig(e, 'fine')} format={formatDB} />
+        <Knob theme="black" min={-100} max={0} onChange={updateDeviceConfig.bind(this, 'fine')} format={formatDB} />
       </Wrapper>
     </Styled.Container>
   );
