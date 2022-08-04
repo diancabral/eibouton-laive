@@ -6,6 +6,9 @@ export const Container = styled.div`
     display: flex;
     color: white;
     white-space: nowrap;
+    > * {
+      width: 100%;
+    }
     > *:not(:last-child) {
       margin-right: 4px;
     }

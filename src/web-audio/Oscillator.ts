@@ -8,6 +8,7 @@ class Oscillator {
   private _context: AudioContext;
   private _node: OscillatorNode;
   private _gain: Gain;
+  private _key: number = 0;
 
   constructor(context: AudioContext) {
     this._context = context;
@@ -18,6 +19,24 @@ class Oscillator {
 
   get node(): GainNode {
     return this._gain.node;
+  }
+
+  setKey(key: number, from?: number, time: number = 0) {
+    this._key = key;
+    if (from && time > 0) {
+      this._node.frequency.value = getFrequencyByNoteKey(from);
+      this._node.frequency.linearRampToValueAtTime(getFrequencyByNoteKey(key), this._context.currentTime + time);
+      return key;
+    }
+    this._node.frequency.value = getFrequencyByNoteKey(key);
+  }
+
+  set octave(octave: number) {
+    this._node.frequency.value = getFrequencyByNoteKey(this._key + (octave || 0) * 12);
+  }
+
+  set fine(fine: number) {
+    this._node.detune.value = fine || 0;
   }
 
   set wave(val: OscillatorType) {
@@ -58,15 +77,6 @@ class Oscillator {
     this._node.type = val;
   }
 
-  setKey(key: number, from?: number, time: number = 0) {
-    if (from && time > 0) {
-      this._node.frequency.value = getFrequencyByNoteKey(from);
-      this._node.frequency.linearRampToValueAtTime(getFrequencyByNoteKey(key), this._context.currentTime + time);
-      return key;
-    }
-    this._node.frequency.value = getFrequencyByNoteKey(key);
-  }
-
   calcDetuneFine(index: number, voices: number, detune: number) {
     if (!detune) return 0;
     if (voices % 2 === 0) {
@@ -74,10 +84,6 @@ class Oscillator {
     } else {
       return [...Array(voices).keys()].map((_, i) => (i - voices / 2 / 1.5) * detune)[index];
     }
-  }
-
-  set fine(val: number) {
-    this._node.detune.value = val;
   }
 
   stop(release: number = 0) {

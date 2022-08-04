@@ -51,6 +51,9 @@ export const Merus = ({ data }: MerusType) => {
   const attack = useMemo(() => config.attack, [config]);
   const decay = useMemo(() => config.decay, [config]);
   const sustain = useMemo(() => config.sustain, [config]);
+  const octave = useMemo(() => config.octave, [config]);
+  const fine = useMemo(() => config.fine, [config]);
+  const portamento = useMemo(() => config.portamento, [config]);
   const release = useMemo(() => config.release, [config]);
 
   const updateOscilattorsWave = (wave: OscillatorType) => {
@@ -64,8 +67,29 @@ export const Merus = ({ data }: MerusType) => {
     updateOscilattorsWave(wave as OscillatorType);
   }, [wave]);
 
+  const updateOscilattorsOctave = (octave: number) => {
+    setCurrentOscillators((current) => {
+      current.forEach(({ oscillators }) => oscillators.forEach((oscilattor) => (oscilattor.octave = octave)));
+      return current;
+    });
+  };
+
+  useEffect(() => {
+    updateOscilattorsOctave(octave as number);
+  }, [octave]);
+
+  const updateOscilattorsFine = (fine: number) => {
+    setCurrentOscillators((current) => {
+      current.forEach(({ oscillators }) => oscillators.forEach((oscilattor) => (oscilattor.fine = fine)));
+      return current;
+    });
+  };
+
+  useEffect(() => {
+    updateOscilattorsFine(fine as number);
+  }, [fine]);
+
   const monophonic = true;
-  const portamento = 0;
   const voices = 1;
   // const detune = 0;
 
@@ -75,10 +99,11 @@ export const Merus = ({ data }: MerusType) => {
         const oscillator = new Oscillator(context as AudioContext);
 
         oscillator.wave = (wave as OscillatorType) || 'sawtooth';
+        oscillator.fine = fine as number;
         // oscillator.fine = 0 + oscillator.calcDetuneFine(i, voices, detune);
 
         const key = midi.notesOn.map((val) => val.key).slice(-1)[0] || 0;
-        oscillator.setKey(key, lastKey, portamento);
+        oscillator.setKey(key + (octave || 0) * 12, lastKey, (portamento || 0) / 1000);
 
         if (voices === 1) stopOscillator(key);
         if (monophonic && lastKey) stopOscillator(lastKey);

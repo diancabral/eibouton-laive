@@ -2,6 +2,7 @@ import { rgba } from 'polished';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MIDIInputType } from '../../../store/midi/types';
 import { theme } from '../../../styled/theme';
+import { useInterval } from './hooks/useInterval';
 import * as Styled from './styled';
 
 type ADSRProps = {
@@ -40,7 +41,7 @@ export const ADSR = ({ attack = 0, decay = 0, sustain = 0, release = 0, width, h
   const pxAttack = padding + milisecondsToPixel(attack);
   const pxDecay = pxAttack + milisecondsToPixel(decay);
   const pxRelease = pxDecay + milisecondsToPixel(release);
-  const pxSustain = canvasHeight - (sustain / 100) * canvasHeight;
+  const pxSustain = canvasHeight - ((canvasHeight - padding) * sustain) / 100;
 
   //
 
@@ -70,7 +71,7 @@ export const ADSR = ({ attack = 0, decay = 0, sustain = 0, release = 0, width, h
     // draw outline
     context.beginPath();
     context.arc(x, y, 3, 0, 2 * Math.PI);
-    context.strokeStyle = rgba(theme.colors.blue[500], 0.5);
+    context.strokeStyle = rgba(theme.colors.orange[500], 0.5);
     context.lineWidth = 10;
     context.filter = 'blur(4px)';
     context.fill();
@@ -79,8 +80,8 @@ export const ADSR = ({ attack = 0, decay = 0, sustain = 0, release = 0, width, h
     // draw inner circle
     context.beginPath();
     context.arc(x, y, 3, 0, 2 * Math.PI);
-    context.fillStyle = theme.colors.blue[500];
-    context.strokeStyle = theme.colors.blue[500];
+    context.fillStyle = theme.colors.orange[500];
+    context.strokeStyle = theme.colors.orange[500];
     context.lineWidth = 1;
     context.filter = 'blur(0)';
     context.fill();
@@ -89,7 +90,7 @@ export const ADSR = ({ attack = 0, decay = 0, sustain = 0, release = 0, width, h
 
   //
 
-  const startTime = +new Date();
+  const [startTime, setStartTime] = useState(+new Date());
 
   const draw = () => {
     if (canvas.current) {
@@ -129,7 +130,7 @@ export const ADSR = ({ attack = 0, decay = 0, sustain = 0, release = 0, width, h
         context.lineWidth = 2;
         context.lineCap = 'round';
         context.lineJoin = 'round';
-        context.strokeStyle = rgba(theme.colors.blue[500], 1);
+        context.strokeStyle = rgba(theme.colors.orange[500], 1);
 
         // draw lines
         startLineFrom(context, padding, canvasHeight);
@@ -161,23 +162,13 @@ export const ADSR = ({ attack = 0, decay = 0, sustain = 0, release = 0, width, h
     }
   };
 
-  const [drawInterval, setDrawInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+  useInterval(() => {
+    draw();
+  }, fps);
 
   useEffect(() => {
-    if (midi?.notesOn.length) {
-      setDrawInterval((current) => {
-        if (current) clearInterval(current);
-        return setInterval(() => draw(), fps);
-      });
-    } else {
-      draw();
-      if (drawInterval) clearInterval(drawInterval);
-    }
-  }, [midi, attack, decay, sustain, release]);
-
-  // useEffect(() => {
-  //   draw();
-  // }, [attack, decay, sustain, release]);
+    setStartTime(+new Date());
+  }, [midi]);
 
   return (
     <Styled.Container>

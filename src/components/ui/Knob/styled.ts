@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 export const Container = styled.div`
   position: relative;
   width: fit-content;
-  padding-bottom: 14px;
+  padding-bottom: 3px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -62,9 +62,10 @@ export const Circle = styled.div.attrs<CircleProps>((props) => ({
     }
   `};
 `;
-export const Output = styled.output`
-  position: absolute;
-  bottom: 0;
-  text-align: center;
-  color: white;
+export const Output = styled.output<{ $handler: boolean }>`
+  ${({ theme, $handler }) => css`
+    text-align: center;
+    color: ${$handler ? theme.colors.orange[500] : 'white'};
+    cursor: ns-resize;
+  `}
 `;

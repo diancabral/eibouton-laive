@@ -29,7 +29,13 @@ export const DeviceView = () => {
   const { updateChannelDevice } = useUpdateChannelData({ channel: currentChannel });
 
   const addDevice = () => {
-    updateChannelDevice(<Merus data={{ channel: currentChannel }} />);
+    updateChannelDevice(<Merus data={{ channel: currentChannel }} />, {
+      wave: 'sawtooth',
+      attack: 0.5,
+      decay: 250,
+      sustain: 0,
+      release: 0.15,
+    });
   };
 
   useEffect(() => {

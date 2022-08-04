@@ -24,7 +24,7 @@ export const MerusInterface = ({ data }: MerusInterfaceProps) => {
     });
   };
 
-  const handleADSR = (value: number, stage: string) => {
+  const updateDeviceConfig = (value: number, stage: string) => {
     updateChannelDeviceConfig({
       ...device.config,
       [stage]: value,
@@ -46,9 +46,53 @@ export const MerusInterface = ({ data }: MerusInterfaceProps) => {
   return (
     <Wrapper theme="dark" direction="row">
       <Styled.Container>
-        <Wrapper theme="mid-dark" direction="column">
+        <Wrapper theme="black">
+          <FormLabel>Amp Envelope</FormLabel>
+          <ADSR width={250} height={95} attack={device.config.attack} decay={device.config.decay} sustain={device.config.sustain} release={device.config.release} midi={midi} />
+          <Styled.Container
+            style={{
+              marginTop: '10px',
+            }}
+          >
+            <div>
+              <FormLabel>Attack</FormLabel>
+              <Knob
+                knob={false}
+                theme="light"
+                min={0}
+                max={32000}
+                value={device.config.attack}
+                onChange={(e) => updateDeviceConfig(e, 'attack')}
+                step={milisecondsKnobStep}
+                format={formatMiliseconds}
+              />
+            </div>
+            <div>
+              <FormLabel>Decay</FormLabel>
+              <Knob knob={false} theme="light" min={0} max={32000} value={device.config.decay} onChange={(e) => updateDeviceConfig(e, 'decay')} step={milisecondsKnobStep} format={formatMiliseconds} />
+            </div>
+            <div>
+              <FormLabel>Sustain</FormLabel>
+              <Knob knob={false} theme="light" min={0} max={100} step={(e) => 1} format={(e) => e.toFixed(1)} value={device.config.sustain} onChange={(e) => updateDeviceConfig(e, 'sustain')} />
+            </div>
+            <div>
+              <FormLabel>Release</FormLabel>
+              <Knob
+                knob={false}
+                theme="light"
+                min={0}
+                max={32000}
+                value={device.config.release}
+                onChange={(e) => updateDeviceConfig(e, 'release')}
+                step={milisecondsKnobStep}
+                format={formatMiliseconds}
+              />
+            </div>
+          </Styled.Container>
+        </Wrapper>
+        {/* <Wrapper theme="black">
+          <FormLabel>Wave</FormLabel>
           <FormSelect
-            label="Wave"
             options={[
               {
                 label: 'Sawtooth',
@@ -70,30 +114,18 @@ export const MerusInterface = ({ data }: MerusInterfaceProps) => {
             value={device.config.wave || 'sawtooth'}
             onSelect={(e) => handleSelectedWave(e)}
           />
+        </Wrapper> */}
+        <Wrapper theme="mid-dark" direction="column">
           <FormLabel>Octave</FormLabel>
-          <Knob theme="light" min={-4} max={4} onChange={(e) => false} />
+          <Knob theme="black" min={-3} max={3} onChange={(e) => updateDeviceConfig(e, 'octave')} />
           <FormLabel>Fine</FormLabel>
-          <Knob theme="light" min={-100} max={100} onChange={(e) => false} />
+          <Knob theme="black" min={-100} max={100} onChange={(e) => updateDeviceConfig(e, 'fine')} />
+          <FormLabel>Glide</FormLabel>
+          <Knob theme="black" min={0} max={1000} onChange={(e) => updateDeviceConfig(e, 'portamento')} />
         </Wrapper>
-        <Wrapper theme="black">
-          <FormLabel>Amp Envelope</FormLabel>
-          <ADSR width={250} height={90} attack={device.config.attack} decay={device.config.decay} sustain={device.config.sustain} release={device.config.release} midi={midi} />
-          {/* <input type="number" value={attack} onChange={(e) => setAttack(parseFloat(e.target.value))} />
-        <input type="number" value={decay} onChange={(e) => setDecay(parseFloat(e.target.value))} /> */}
-          <Styled.Container
-            style={{
-              marginTop: '10px',
-            }}
-          >
-            <FormLabel>Attack</FormLabel>
-            <Knob theme="light" min={0} max={32000} value={device.config.attack} onChange={(e) => handleADSR(e, 'attack')} step={milisecondsKnobStep} format={formatMiliseconds} />
-            <FormLabel>Decay</FormLabel>
-            <Knob theme="light" min={0} max={32000} value={device.config.decay} onChange={(e) => handleADSR(e, 'decay')} step={milisecondsKnobStep} format={formatMiliseconds} />
-            <FormLabel>Sustain</FormLabel>
-            <Knob theme="light" min={0} max={100} step={(e) => 1} format={(e) => e.toFixed(1)} value={device.config.sustain} onChange={(e) => handleADSR(e, 'sustain')} />
-            <FormLabel>Release</FormLabel>
-            <Knob theme="light" min={0} max={32000} value={device.config.release} onChange={(e) => handleADSR(e, 'release')} step={milisecondsKnobStep} format={formatMiliseconds} />
-          </Styled.Container>
+        <Wrapper theme="mid-dark" direction="column">
+          <FormLabel>Volume</FormLabel>
+          <Knob theme="black" min={-100} max={0} onChange={(e) => updateDeviceConfig(e, 'fine')} />
         </Wrapper>
       </Styled.Container>
     </Wrapper>

@@ -4,4 +4,7 @@ export type MerusConfig = {
   decay?: number;
   sustain?: number;
   release?: number;
+  octave?: number;
+  fine?: number;
+  portamento?: number;
 };

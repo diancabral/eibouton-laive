@@ -17,12 +17,13 @@ export const useUpdateChannelData = (data: ChannelType) => {
     }));
   };
 
-  const updateChannelDevice = (component: ReactElement) => {
+  const updateChannelDevice = (component: ReactElement, config: ChannelDeviceConfig) => {
     updateChannelOptions((current) => ({
       ...current,
       device: {
         ...current.device,
         component,
+        config,
       },
     }));
     activateChannelArm();

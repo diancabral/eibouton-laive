@@ -45,7 +45,13 @@ export const Channel = memo(({ index = 0, data }: ChannelProps) => {
 
   const addDevice = () => {
     updateChannelTitle(!index ? 'sawtooth' : index === 1 ? 'square' : index === 2 ? 'triangle' : 'sine');
-    updateChannelDevice(<Merus data={data} />);
+    updateChannelDevice(<Merus data={data} />, {
+      wave: 'sawtooth',
+      attack: 0.5,
+      decay: 250,
+      sustain: 0,
+      release: 0.15,
+    });
   };
 
   const toggleMIDIArm = async () => {

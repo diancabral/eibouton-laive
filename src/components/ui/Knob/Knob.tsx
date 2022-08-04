@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
+import { useMouseMoveHandler } from './hooks/useMouseMoveHandler';
 
 import * as Styled from './styled';
 
@@ -6,14 +7,14 @@ type KnobProps = {
   min?: number;
   max?: number;
   value?: number;
-  mode?: string;
+  knob?: boolean;
   theme?: Styled.KnobThemeType;
   format?: (value: number) => string;
   step?: (value: number) => number;
   onChange: (value: number) => unknown;
 };
 
-export const Knob = memo(({ min = 0, max = 100, value = 0, mode = 'default', step = () => 1, format, theme, onChange }: KnobProps) => {
+export const Knob = memo(({ min = 0, max = 100, value = 0, knob = true, step = () => 1, format, theme, onChange }: KnobProps) => {
   const [currentValue, setCurrentValue] = useState(value);
   const rotate = useMemo(() => {
     const total = max - min;
@@ -25,13 +26,11 @@ export const Knob = memo(({ min = 0, max = 100, value = 0, mode = 'default', ste
 
   const [mouseActive, setMouseActive] = useState(false);
   const [clientYStart, setClientYStart] = useState(0);
-  const [, setClientYOld] = useState(0);
-  const [valueStart, setValueStart] = useState(0);
+  const [clientYOld, setClientYOld] = useState(0);
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement | HTMLOutputElement>) => {
     setMouseActive(true);
     setClientYStart(e.clientY);
-    setValueStart(currentValue);
   };
 
   const handleMouseUp = () => {
@@ -41,23 +40,19 @@ export const Knob = memo(({ min = 0, max = 100, value = 0, mode = 'default', ste
     }
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  useMouseMoveHandler((e: MouseEvent) => {
     if (mouseActive) {
       e.preventDefault();
-      setClientYOld((current) => {
-        let isSum = false;
-        if (current !== e.clientY) {
-          if (current > e.clientY) isSum = true;
-          setCurrentValue((current) => {
-            let distanceY = current + (clientYStart - e.clientY);
-            const stepValue = step(distanceY);
-            return Math.min(Math.max(isSum ? current + stepValue : current - stepValue, min), max);
-          });
-        }
-        return e.clientY;
-      });
+      let isSum = false;
+      if (clientYOld !== e.clientY) {
+        if (clientYOld > e.clientY) isSum = true;
+        let distanceY = currentValue + (clientYStart - e.clientY);
+        const stepValue = step(distanceY);
+        setCurrentValue(Math.min(Math.max(isSum ? currentValue + stepValue : currentValue - stepValue, min), max));
+      }
+      setClientYOld(e.clientY);
     }
-  };
+  }, mouseActive);
 
   useEffect(() => {
     onChange(currentValue);
@@ -69,17 +64,19 @@ export const Knob = memo(({ min = 0, max = 100, value = 0, mode = 'default', ste
 
   useEffect(() => {
     window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('mousemove', handleMouseMove);
     return () => {
       window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [clientYStart, max, min, mouseActive]);
+  }, [mouseActive]);
 
   return (
     <Styled.Container>
-      <Styled.Circle $rotate={rotate} onMouseDown={(e) => handleMouseDown(e)} $theme={theme} />
-      <Styled.Output>{format?.(currentValue) ?? currentValue}</Styled.Output>
+      {knob && <Styled.Circle $rotate={rotate} onMouseDown={(e) => handleMouseDown(e)} $theme={theme} />}
+      <Styled.Output $handler={!knob} onMouseDown={(e) => handleMouseDown(e)}>
+        {format?.(currentValue) ?? currentValue}
+      </Styled.Output>
     </Styled.Container>
   );
 });
+
+Knob.displayName = 'Knob';
