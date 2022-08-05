@@ -2,23 +2,25 @@ import { useEffect, useMemo, useState } from 'react';
 import Oscillator from '../../web-audio/Oscillator';
 import { ChannelType } from '../../types';
 import { useGetAudioGlobal } from '../../store/audio/hooks/useGetAudioGlobal';
-import { useGetDeviceConfig } from '../../store/channels/hooks/useGetChannelDevice';
 import { useGetMIDIMessages } from '../../store/midi/hooks/useGetMIDIMessages';
 import Gain from '../../web-audio/Gain';
+import { useGetChannelDeviceConfig } from '../../store/channels/hooks/useGetChannelDevice';
+import { useGetChannelOutput } from '../../store/channels/hooks/useGetChannelOutput';
 
-type MerusType = {
+type MerusProps = {
   data: ChannelType;
 };
 
-export const Merus = ({ data }: MerusType) => {
-  const { context, master } = useGetAudioGlobal();
+export const Merus = ({ data }: MerusProps) => {
+  const { context } = useGetAudioGlobal();
+  const channelOutput = useGetChannelOutput(data);
 
-  const output = new Gain(context);
+  const output = useMemo(() => new Gain(context), [context]);
 
-  output.connectTo(master);
+  output.connectTo(channelOutput as GainNode);
 
   const midi = useGetMIDIMessages(data);
-  const config = useGetDeviceConfig(data);
+  const config = useGetChannelDeviceConfig(data);
 
   const [, setCurrentOscillators] = useState<
     {
@@ -108,7 +110,7 @@ export const Merus = ({ data }: MerusType) => {
     return midi.notesOn.map((val) => val.key).slice(-1)[0] || 0;
   }, [midi.notesOn]);
 
-  const merusOscillators: ['osc1', 'osc2'] = ['osc1', 'osc2'];
+  const merusOscillators = useMemo<['osc1', 'osc2']>(() => ['osc1', 'osc2'], []);
 
   useEffect(() => {
     if (midi.notesOn.length) {
@@ -123,8 +125,8 @@ export const Merus = ({ data }: MerusType) => {
           const key = midiNewNote;
           oscillator.setKey(key + (config[osc]?.octave || 0) * 12, lastKey, (portamento || 0) / 1000);
 
-          // if (voices === 1) stopOscillator(key);
-          // if (monophonic && lastKey) stopOscillator(lastKey);
+          if (voices === 1) stopOscillator(key);
+          if (monophonic && lastKey) stopOscillator(lastKey);
 
           setCurrentOscillators((current) => {
             const index = current.findIndex((val) => val.key === key);

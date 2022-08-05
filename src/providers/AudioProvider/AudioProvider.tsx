@@ -1,10 +1,15 @@
-import { useEffect } from 'react';
+import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import NativeAudioContext from '../../web-audio/NativeAudioContext';
 import Gain from '../../web-audio/Gain';
 
 import { useUpdateAudioGlobal } from '../../store/audio/hooks/useUpdateAudioGlobal';
+import { useUpdateCurrentChannel } from '../../store/channels/hooks/useUpdateCurrentChannel';
 
-export const AudioProvider = () => {
+type AudioProviderProps = {
+  children: ReactElement | ReactNode;
+};
+
+export const AudioProvider = ({ children }: AudioProviderProps) => {
   const ContextNode = new NativeAudioContext();
   const MasterNode = new Gain(ContextNode.context);
 
@@ -14,13 +19,17 @@ export const AudioProvider = () => {
   const master = MasterNode.node;
 
   const { setAudio } = useUpdateAudioGlobal();
+  const { setCurrentChannelAudio } = useUpdateCurrentChannel();
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     setAudio({
       context,
-      master
-    })
+      master,
+    });
+    setCurrentChannelAudio(context, master);
+    setReady(true);
   }, []);
 
-  return <></>
+  return ready ? <>{children}</> : <></>;
 };

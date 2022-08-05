@@ -17,7 +17,3 @@ export const useGetChannelData = (data: ChannelType) => {
     isMaster,
   };
 };
-
-export const useGetDeviceComponent = (data: ChannelType) => {
-  return useAtomValue(useMemo(() => selectAtom(data.channel, (channel) => channel.device.component), [data]));
-};

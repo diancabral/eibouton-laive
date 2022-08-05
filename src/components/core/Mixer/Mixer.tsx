@@ -1,18 +1,12 @@
 import { memo } from 'react';
 import { masterChannel } from '../../../models/masterChannel';
-import { useGetDeviceComponent } from '../../../store/channels/hooks/useGetChannelData';
 import { useGetChannels } from '../../../store/channels/hooks/useGetChannels';
 import { useUpdateChannels } from '../../../store/channels/hooks/useUpdateChannels';
-import { ChannelType } from '../../../types';
 import { Button } from '../../ui/Button/Button';
 import { Wrapper } from '../../ui/Wrapper/Wrapper';
 import { Channel } from '../Channel/Channel';
 
 import * as Styled from './styled';
-
-const DeviceComponent = ({ data }: { data: ChannelType }) => {
-  return useGetDeviceComponent(data) || <></>;
-};
 
 const MixerChannels = () => {
   const { channels } = useGetChannels();
@@ -22,7 +16,6 @@ const MixerChannels = () => {
         return (
           <Styled.Column key={val.uuid}>
             <Channel data={val} index={index} />
-            <DeviceComponent data={val} />
           </Styled.Column>
         );
       })}

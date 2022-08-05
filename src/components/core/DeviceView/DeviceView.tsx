@@ -29,7 +29,6 @@ export const DeviceView = () => {
   const { updateChannelDevice } = useUpdateChannelData({ channel: currentChannel });
 
   const osc = {
-    active: true,
     wave: 'sawtooth',
     attack: 0.5,
     decay: 250,

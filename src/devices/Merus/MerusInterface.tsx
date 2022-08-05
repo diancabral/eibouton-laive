@@ -4,7 +4,7 @@ import { FormLabel } from '../../components/ui/Form/Label/Label';
 import { FormSelect } from '../../components/ui/Form/Select/Select';
 import { Knob } from '../../components/ui/Knob/Knob';
 import { Wrapper } from '../../components/ui/Wrapper/Wrapper';
-import { useGetDeviceConfig } from '../../store/channels/hooks/useGetChannelDevice';
+import { useGetChannelDeviceConfig } from '../../store/channels/hooks/useGetChannelDevice';
 import { useUpdateChannelData } from '../../store/channels/hooks/useUpdateChannelData';
 import { useGetMIDIMessages } from '../../store/midi/hooks/useGetMIDIMessages';
 import { ChannelType } from '../../types';
@@ -17,7 +17,7 @@ type MerusInterfaceProps = {
 
 export const MerusInterface = ({ data }: MerusInterfaceProps) => {
   const midi = useGetMIDIMessages(data);
-  const config = useGetDeviceConfig(data);
+  const config = useGetChannelDeviceConfig(data);
 
   const { updateChannelDeviceConfig } = useUpdateChannelData(data);
 
