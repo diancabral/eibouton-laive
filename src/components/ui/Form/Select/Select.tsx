@@ -39,6 +39,10 @@ export const FormSelect = ({ label, theme, options, onSelect, value, ...styledSy
     });
   }, [active]);
 
+  useEffect(() => {
+    setCurrentValue(value);
+  }, [value]);
+
   return (
     <Styled.Wrapper {...styledSystem}>
       <Styled.Value $theme={theme} onMouseDown={(e) => handleSelectClick(e)}>

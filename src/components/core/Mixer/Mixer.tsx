@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { masterChannel } from '../../../models/masterChannel';
-import { useGetDevice } from '../../../store/channels/hooks/useGetChannelData';
+import { useGetDeviceComponent } from '../../../store/channels/hooks/useGetChannelData';
 import { useGetChannels } from '../../../store/channels/hooks/useGetChannels';
 import { useUpdateChannels } from '../../../store/channels/hooks/useUpdateChannels';
 import { ChannelType } from '../../../types';
@@ -10,10 +10,8 @@ import { Channel } from '../Channel/Channel';
 
 import * as Styled from './styled';
 
-const Device = ({ data }: {
-  data: ChannelType
-}) => {
-  return useGetDevice(data) || <></>;
+const DeviceComponent = ({ data }: { data: ChannelType }) => {
+  return useGetDeviceComponent(data) || <></>;
 };
 
 const MixerChannels = () => {
@@ -24,7 +22,7 @@ const MixerChannels = () => {
         return (
           <Styled.Column key={val.uuid}>
             <Channel data={val} index={index} />
-            <Device data={val} />
+            <DeviceComponent data={val} />
           </Styled.Column>
         );
       })}
@@ -34,7 +32,7 @@ const MixerChannels = () => {
 
 const MixerAdd = () => {
   const { createChannel } = useUpdateChannels();
-  return <Button onClick={createChannel}>add channel</Button>
+  return <Button onClick={createChannel}>add channel</Button>;
 };
 
 export const Mixer = memo(() => {
@@ -44,14 +42,14 @@ export const Mixer = memo(() => {
         <Styled.Row>
           <MixerChannels />
           <Styled.Message>
-            Drop Samples or devices here or<br /><br />
+            Drop Samples or devices here or
+            <br />
+            <br />
             <MixerAdd />
           </Styled.Message>
         </Styled.Row>
         <Styled.Row $fixed>
-          <Styled.Column $fixed>
-            {/* <Channel data={{ channel: masterChannel }} /> */}
-          </Styled.Column>
+          <Styled.Column $fixed>{/* <Channel data={{ channel: masterChannel }} /> */}</Styled.Column>
         </Styled.Row>
       </Styled.Container>
     </Wrapper>

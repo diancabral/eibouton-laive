@@ -61,7 +61,6 @@ export const Knob = memo(({ min = 0, max = 100, value = 0, knob = true, step = (
   }, [value]);
 
   useEffect(() => {
-    console.log(1);
     callback.current = onChange;
   }, [onChange]);
 

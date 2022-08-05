@@ -7,18 +7,21 @@ const SAMPLE_RATE = Math.pow(2, 12);
 class Oscillator {
   private _context: AudioContext;
   private _node: OscillatorNode;
-  private _gain: Gain;
+  private _output: Gain;
+  private _adsr: Gain;
   private _key: number = 0;
 
   constructor(context: AudioContext) {
     this._context = context;
     this._node = this._context.createOscillator();
-    this._gain = new Gain(this._context);
-    this._node.connect(this._gain.node);
+    this._output = new Gain(this._context);
+    this._adsr = new Gain(this._context);
+    this._node.connect(this._adsr.node);
+    this._adsr.connectTo(this._output.node);
   }
 
   get node(): GainNode {
-    return this._gain.node;
+    return this._output.node;
   }
 
   setKey(key: number, from?: number, time: number = 0) {
@@ -77,6 +80,10 @@ class Oscillator {
     this._node.type = val;
   }
 
+  set volume(volume: number) {
+    this._output.volume = volume;
+  }
+
   calcDetuneFine(index: number, voices: number, detune: number) {
     if (!detune) return 0;
     if (voices % 2 === 0) {
@@ -93,14 +100,14 @@ class Oscillator {
 
   play(attack: number = 0, decay: number = 0, sustain: number = 100, release?: number) {
     this._node.start(this._context.currentTime);
-    this._gain.node.gain.cancelScheduledValues(this._context.currentTime);
-    this._gain.volume = 0;
-    this._gain.node.gain.linearRampToValueAtTime(1, this._context.currentTime + attack / 1000);
-    this._gain.node.gain.linearRampToValueAtTime(sustain / -100, this._context.currentTime + (attack + decay) / 1000);
+    this._adsr.node.gain.cancelScheduledValues(this._context.currentTime);
+    this._adsr.volume = -100;
+    this._adsr.node.gain.linearRampToValueAtTime(1, this._context.currentTime + attack / 1000);
+    this._adsr.node.gain.linearRampToValueAtTime(1 - sustain / -100, this._context.currentTime + (attack + decay) / 1000);
   }
 
   connectTo(node: AudioNode) {
-    return this._gain.connectTo(node);
+    return this._output.connectTo(node);
   }
 }
 

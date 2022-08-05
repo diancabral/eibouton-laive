@@ -11,6 +11,7 @@ import { ButtonArm } from './components/ButtonArm/ButtonArm';
 import { ButtonSolo } from './components/ButtonSolo/ButtonSolo';
 
 import * as Styled from './styled';
+import { useGetMIDIMessages } from '../../../store/midi/hooks/useGetMIDIMessages';
 
 //
 
@@ -37,22 +38,24 @@ type ChannelProps = {
 };
 
 export const Channel = memo(({ index = 0, data }: ChannelProps) => {
-  const { selected, metadata, mixer, midi, isMaster } = useGetChannelData(data);
+  const { selected, metadata, mixer, isMaster } = useGetChannelData(data);
+
+  const midi = useGetMIDIMessages(data);
 
   const { updateChannelTitle, updateChannelDevice, activateChannelArm, deactivateChannelArm, activateSoloChannel, updateChannelSelected } = useUpdateChannelData(data);
 
   //
 
-  const addDevice = () => {
-    updateChannelTitle(!index ? 'sawtooth' : index === 1 ? 'square' : index === 2 ? 'triangle' : 'sine');
-    updateChannelDevice(<Merus data={data} />, {
-      wave: 'sawtooth',
-      attack: 0.5,
-      decay: 250,
-      sustain: -100,
-      release: 0.15,
-    });
-  };
+  // const addDevice = () => {
+  //   updateChannelTitle(!index ? 'sawtooth' : index === 1 ? 'square' : index === 2 ? 'triangle' : 'sine');
+  //   updateChannelDevice(<Merus data={data} />, {
+  //     wave: 'sawtooth',
+  //     attack: 0.5,
+  //     decay: 250,
+  //     sustain: -100,
+  //     release: 0.15,
+  //   });
+  // };
 
   const toggleMIDIArm = async () => {
     if (!mixer.arm) {

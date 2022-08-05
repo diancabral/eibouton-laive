@@ -8,13 +8,22 @@ export const useUpdateChannelData = (data: ChannelType) => {
   const { setCurrentChannel } = useUpdateCurrentChannel();
 
   const updateChannelDeviceConfig = (config: ChannelDeviceConfig) => {
+    const key = Object.keys(config)[0] as keyof ChannelDeviceConfig;
+    const valueIsObject = typeof config[key] === 'object';
     updateChannelOptions((current) => ({
       ...current,
       device: {
         ...current.device,
         config: {
           ...current.device.config,
-          ...config,
+          ...(valueIsObject
+            ? {
+                [key]: {
+                  ...(current.device.config[key] as object),
+                  ...(config[key] as object),
+                },
+              }
+            : config),
         },
       },
     }));

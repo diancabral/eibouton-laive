@@ -6,11 +6,11 @@ class Gain {
   }
 
   get node(): GainNode {
-    return this._node
+    return this._node;
   }
 
   set volume(val: number) {
-    this._node.gain.value = val / 100;
+    this._node.gain.value = 1 - val / -100;
   }
 
   connectTo(node: AudioNode) {

@@ -9,7 +9,10 @@ type DeviceWrapperProps = {
 export const DeviceWrapper = ({ title, children }: DeviceWrapperProps) => {
   return (
     <Styled.Container>
-      <Styled.Header>{title}</Styled.Header>
+      <Styled.Header>
+        <Styled.State />
+        {title}
+      </Styled.Header>
       <Styled.Children>{children}</Styled.Children>
     </Styled.Container>
   );

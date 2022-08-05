@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Merus } from '../../../devices/Merus/Merus';
 import { MerusInterface } from '../../../devices/Merus/MerusInterface';
 import { CurrentChannel } from '../../../store/channels';
-import { useGetCurrentChannelDevice, useGetCurrentChannelMIDIInput } from '../../../store/channels/hooks/useGetCurrentChannelData';
+import { useGetCurrentChannelDeviceComponent, useGetCurrentChannelMIDIInput } from '../../../store/channels/hooks/useGetCurrentChannelData';
 import { useUpdateChannelData } from '../../../store/channels/hooks/useUpdateChannelData';
 import { Button } from '../../ui/Button/Button';
 import { MIDIIndicator } from '../../ui/MIDIIndicator/MIDIIndicator';
@@ -24,17 +24,27 @@ export const InputIndicator = () => {
 export const DeviceView = () => {
   const currentChannel = useAtomValue(CurrentChannel);
 
-  const device = useGetCurrentChannelDevice();
+  const deviceComponent = useGetCurrentChannelDeviceComponent();
 
   const { updateChannelDevice } = useUpdateChannelData({ channel: currentChannel });
 
+  const osc = {
+    active: true,
+    wave: 'sawtooth',
+    attack: 0.5,
+    decay: 250,
+    sustain: -100,
+    release: 0.15,
+    volume: 0,
+  };
+
   const addDevice = () => {
     updateChannelDevice(<Merus data={{ channel: currentChannel }} />, {
-      wave: 'sawtooth',
-      attack: 0.5,
-      decay: 250,
-      sustain: -100,
-      release: 0.15,
+      osc1: {
+        ...osc,
+        active: true,
+      },
+      osc2: osc,
     });
   };
 
@@ -46,13 +56,13 @@ export const DeviceView = () => {
     <Wrapper theme="dark" key={currentChannel.toString()}>
       <Styled.Container>
         <InputIndicator />
-        {!device.component && (
+        {!deviceComponent && (
           <Styled.Message>
             Drop an Sample here or&nbsp;
             <Button onClick={addDevice}>add a Merus Synthesizer</Button>
           </Styled.Message>
         )}
-        {device.component && (
+        {deviceComponent && (
           <>
             <DeviceWrapper title="Merus Synthesizer">
               <MerusInterface data={{ channel: currentChannel }} />

@@ -4,6 +4,5 @@ import { selectAtom } from 'jotai/utils';
 import { ChannelType } from '../../../types';
 
 export const useGetMIDIMessages = (data: ChannelType) => {
-  const midi = useAtomValue(useMemo(() => selectAtom(data.channel, channel => channel.midi.input), []));
-  return { midi }
+  return useAtomValue(useMemo(() => selectAtom(data.channel, (channel) => channel.midi.input), []));
 };
