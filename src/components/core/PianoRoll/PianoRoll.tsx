@@ -21,18 +21,13 @@ export const PianoRoll = () => {
 
   const draw = () => {
     if (canvasRef.current) {
-      const canvas = new Canvas({
-        element: canvasRef.current,
-        scale: 2,
-        width: getWidth,
-        height: getHeight,
-      });
+      const canvas = new Canvas({ element: canvasRef.current, scale: 2, width: getWidth, height: getHeight });
 
       canvas.drawLine(({ context, from, to }) => {
         context.lineWidth = 1;
         context.strokeStyle = rgba('black', 0.2);
-        from(keysContainerWidth, 0);
-        to(keysContainerWidth, getHeight);
+        from({ x: keysContainerWidth, y: 0 });
+        to({ x: keysContainerWidth, y: getHeight });
       });
     }
   };

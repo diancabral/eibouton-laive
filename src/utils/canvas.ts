@@ -27,10 +27,17 @@ type CanvasConstructorProps = {
   height: number;
 };
 
+type StartLineFromParams = {
+  x: number;
+  y: number;
+};
+
+type DrawLineToParams = StartLineFromParams;
+
 type DrawCallbackParams = {
   context: CanvasRenderingContext2D;
-  from: (x: number, y: number) => unknown;
-  to: (x: number, y: number) => unknown;
+  from: (params: StartLineFromParams) => void;
+  to: (params: DrawLineToParams) => void;
 };
 
 export class Canvas {
@@ -48,6 +55,7 @@ export class Canvas {
     this._height = height;
 
     this.setCanvasScale();
+    this.clearCanvasScreen();
   }
 
   setCanvasScale() {
@@ -63,18 +71,17 @@ export class Canvas {
     this._context.fillRect(0, 0, this._width, this._height);
   };
 
-  startLineFrom = (x: number, y: number) => {
+  startLineFrom = ({ x, y }: StartLineFromParams) => {
     this._context.beginPath();
     this._context.moveTo(x + 0.5, y + 0.5);
   };
 
-  drawLineTo = (x: number, y: number) => {
+  drawLineTo = ({ x, y }: DrawLineToParams) => {
     this._context.lineTo(x + 0.5, y + 0.5);
   };
 
   drawLine(callback: ({ context, from, to }: DrawCallbackParams) => unknown) {
     if (this._context) {
-      this.clearCanvasScreen();
       callback({ context: this._context, from: this.startLineFrom, to: this.drawLineTo });
       this._context.stroke();
     }
