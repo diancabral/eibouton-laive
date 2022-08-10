@@ -2,6 +2,7 @@ import { rgba } from 'polished';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MIDIInputType } from '../../../store/midi/types';
 import { theme } from '../../../styled/theme';
+import { clearCanvasScreen, drawLineTo, setCanvasScale, startLineFrom } from '../../../utils/canvas';
 import { useInterval } from './hooks/useInterval';
 import * as Styled from './styled';
 
@@ -44,28 +45,6 @@ export const ADSR = ({ attack = 0, decay = 0, sustain = 0, release = 0, width, h
   const pxSustain = padding + (-(canvasHeight - padding) * sustain) / 100;
 
   //
-
-  const setCanvasScale = (element: HTMLCanvasElement, scale: number, width: number, height: number) => {
-    element.style.width = width + 'px';
-    element.style.height = height + 'px';
-    element.width = width * scale;
-    element.height = height * scale;
-  };
-
-  const clearCanvasScreen = (context: CanvasRenderingContext2D, scale: number, width: number, height: number) => {
-    context.scale(scale, scale);
-    context.fillStyle = 'transparent';
-    context.fillRect(0, 0, width, height);
-  };
-
-  const startLineFrom = (context: CanvasRenderingContext2D, x: number, y: number) => {
-    context.beginPath();
-    context.moveTo(x + 0.5, y + 0.5);
-  };
-
-  const drawLineTo = (context: CanvasRenderingContext2D, x: number, y: number) => {
-    context.lineTo(x, y);
-  };
 
   const drawCircleNote = (context: CanvasRenderingContext2D, x: number, y: number) => {
     // draw outline

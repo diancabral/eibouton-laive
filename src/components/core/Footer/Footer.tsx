@@ -4,10 +4,8 @@ import * as Styled from './styled';
 
 const MidiNoteIndicator = () => {
   const { getMIDINotesOn } = useGetMIDIGlobal();
-  return !!getMIDINotesOn.length ? (
-    <>MIDI Note: {getMIDINotesOn.map((val) => val.display).slice(-1)}</>
-  ) : <></>;
-}
+  return !!getMIDINotesOn.length ? <>MIDI Key: {getMIDINotesOn.map((val) => val.display).slice(-1)}</> : <></>;
+};
 
 export const Footer = () => {
   return (
@@ -15,4 +13,4 @@ export const Footer = () => {
       <MidiNoteIndicator />
     </Styled.Container>
   );
-}
+};

@@ -2,20 +2,23 @@ import { useAtomValue, useUpdateAtom } from 'jotai/utils';
 import { CurrentChannel } from '..';
 import { ChannelType } from '../../../types';
 import Gain from '../../../web-audio/Gain';
-import { useGetAudioGlobal } from '../../audio/hooks/useGetAudioGlobal';
 import { useUpdateMIDIArmed } from '../../midi/hooks/useUpdateMIDIArmed';
 
 export const useUpdateCurrentChannel = () => {
-  const updateCurrentChannelOptions = useUpdateAtom(useAtomValue(CurrentChannel));
+  const getCurrentChannel = useAtomValue(CurrentChannel);
+  const updateCurrentChannelOptions = useUpdateAtom(getCurrentChannel);
   const updateCurrentChannel = useUpdateAtom(CurrentChannel);
 
   const { updateMIDIArmed, clearMIDIArmed } = useUpdateMIDIArmed();
 
-  const clearChannelSelected = () =>
-    updateCurrentChannelOptions((current) => ({
-      ...current,
-      selected: false,
-    }));
+  const clearChannelSelected = () => {
+    if (Object.keys(getCurrentChannel).length) {
+      updateCurrentChannelOptions((current) => ({
+        ...current,
+        selected: false,
+      }));
+    }
+  };
 
   const setCurrentChannel = (data: ChannelType, midi: boolean = true) => {
     if (midi) {
@@ -27,14 +30,16 @@ export const useUpdateCurrentChannel = () => {
   };
 
   const setCurrentChannelAudio = (context: AudioContext, master: GainNode) => {
-    updateCurrentChannelOptions((current) => {
-      const output = new Gain(context);
-      output.connectTo(master);
-      return {
-        ...current,
-        output: output.node,
-      };
-    });
+    if (Object.keys(getCurrentChannel).length) {
+      updateCurrentChannelOptions((current) => {
+        const output = new Gain(context);
+        output.connectTo(master);
+        return {
+          ...current,
+          output: output.node,
+        };
+      });
+    }
   };
 
   return {

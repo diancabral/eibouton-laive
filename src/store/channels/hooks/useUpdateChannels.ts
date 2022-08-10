@@ -13,9 +13,9 @@ export const useUpdateChannels = () => {
   const { setCurrentChannel, setCurrentChannelAudio } = useUpdateCurrentChannel();
   const { context, master } = useGetAudioGlobal();
 
-  const createChannel = () => {
-    const output = new Gain(context);
-    output.connectTo(master);
+  const createChannel = (externalContext: AudioContext = context, externalMaster: GainNode = master) => {
+    const output = new Gain(externalContext);
+    output.connectTo(externalMaster);
     const cloned = structuredClone(defaultChannel);
     const data = {
       uuid: uuidv4(),
@@ -25,7 +25,7 @@ export const useUpdateChannels = () => {
       }),
     };
     setCurrentChannel(data);
-    setCurrentChannelAudio(context, master);
+    setCurrentChannelAudio(externalContext, externalMaster);
     updateChannels((current) => [...current, data]);
   };
 

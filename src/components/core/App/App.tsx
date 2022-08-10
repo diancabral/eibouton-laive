@@ -11,24 +11,26 @@ import { AudioProvider } from '../../../providers/AudioProvider/AudioProvider';
 
 import { ReactComponent as Sprite } from '../../../static/icons/svg/sprite.css.svg';
 import { DeviceRenderer } from '../DeviceRenderer/DeviceRenderer';
+import { PianoRoll } from '../PianoRoll/PianoRoll';
 
 export const App = memo(() => {
   return (
     <>
       <Sprite />
-      <DeviceRenderer />
-      <MIDIProvider />
       <AudioProvider>
+        <MIDIProvider />
+        <DeviceRenderer />
         <Styled.Container>
           <Styled.Row $fitContent>
             <Header />
           </Styled.Row>
           <Styled.Row>
-            <Mixer />
+            {/* <Mixer /> */}
+            <PianoRoll />
           </Styled.Row>
-          <Styled.Row $fitContent>
+          {/* <Styled.Row $fitContent>
             <DeviceView />
-          </Styled.Row>
+          </Styled.Row> */}
           <Styled.Row $fitContent>
             <Footer />
           </Styled.Row>

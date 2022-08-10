@@ -25,7 +25,7 @@ const MixerChannels = () => {
 
 const MixerAdd = () => {
   const { createChannel } = useUpdateChannels();
-  return <Button onClick={createChannel}>add channel</Button>;
+  return <Button onClick={() => createChannel()}>add channel</Button>;
 };
 
 export const Mixer = memo(() => {

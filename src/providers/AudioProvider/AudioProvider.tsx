@@ -3,7 +3,7 @@ import NativeAudioContext from '../../web-audio/NativeAudioContext';
 import Gain from '../../web-audio/Gain';
 
 import { useUpdateAudioGlobal } from '../../store/audio/hooks/useUpdateAudioGlobal';
-import { useUpdateCurrentChannel } from '../../store/channels/hooks/useUpdateCurrentChannel';
+import { useUpdateChannels } from '../../store/channels/hooks/useUpdateChannels';
 
 type AudioProviderProps = {
   children: ReactElement | ReactNode;
@@ -19,7 +19,7 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   const master = MasterNode.node;
 
   const { setAudio } = useUpdateAudioGlobal();
-  const { setCurrentChannelAudio } = useUpdateCurrentChannel();
+  const { createChannel } = useUpdateChannels();
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
       context,
       master,
     });
-    setCurrentChannelAudio(context, master);
+    createChannel(context, master);
     setReady(true);
   }, []);
 
