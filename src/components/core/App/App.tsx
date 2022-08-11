@@ -28,9 +28,9 @@ export const App = memo(() => {
             {/* <Mixer /> */}
             <PianoRoll />
           </Styled.Row>
-          {/* <Styled.Row $fitContent>
+          <Styled.Row $fitContent>
             <DeviceView />
-          </Styled.Row> */}
+          </Styled.Row>
           <Styled.Row $fitContent>
             <Footer />
           </Styled.Row>
