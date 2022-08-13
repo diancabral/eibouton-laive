@@ -1,38 +1,46 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MIDI_NOTES_NAMES, MIDI_NOTES_OCTAVES } from '../../../providers/MIDIProvider/consts';
 import { useGetMIDIGlobal } from '../../../store/midi/hooks/useGetMIDIGlobal';
 import { useUpdateMIDIGlobal } from '../../../store/midi/hooks/useUpdateMIDIGlobal';
 import { theme } from '../../../styled/theme';
-import { Canvas, CanvasWriteTextParams } from '../../../utils/canvas';
+import { Canvas, CanvasDrawBoxParams, CanvasDrawLineParams, CanvasWriteTextParams } from '../../../utils/canvas';
 import { Wrapper } from '../../ui/Wrapper/Wrapper';
 
 import * as Styled from './styled';
 
 type Axis = { x: number; y: number };
 
+const keysContainerWidth = 80;
+const noteWidth = 20;
+
 export const PianoRoll = () => {
+  const { updateMIDIGlobalKey, removeAllMIDIMessages } = useUpdateMIDIGlobal();
+  const { getMIDINotesOn } = useGetMIDIGlobal();
+
   const container = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [getWidth, setWidth] = useState(0);
   const [getHeight, setHeight] = useState(0);
+  const [noteHeight, setNoteHeight] = useState(20);
+
   const [mousePosition, setMousePosition] = useState<Axis>({} as Axis);
+  const [mouseClickPosition, setMouseStartPosition] = useState<Axis>({} as Axis);
   const [mouseClick, setMouseClick] = useState(false);
   const [mouseActive, setMouseActive] = useState(false);
   const [scrollY, setScrollY] = useState(0);
-  const [noteHeight, setNoteHeight] = useState(20);
+  const [resizeYActive, setResizeYActive] = useState(false);
+  const [noteActive, setNoteActive] = useState(false);
 
   const maxScroll = useMemo(() => MIDI_NOTES_OCTAVES * ((noteHeight + 1) * 12) - getHeight, [getHeight, noteHeight]);
-
-  const keysContainerWidth = 80;
-  const noteWidth = 20;
-
-  const { updateMIDIGlobalKey, removeAllMIDIMessages } = useUpdateMIDIGlobal();
-  const { getMIDINotesOn } = useGetMIDIGlobal();
-
   const activeNote = useMemo(() => (getMIDINotesOn.slice(-1)[0] || []).key, [getMIDINotesOn]);
 
   useEffect(() => {
+    const playNote = (key: number) => {
+      updateMIDIGlobalKey(key);
+      setNoteActive(true);
+    };
+
     if (canvasRef.current) {
       const canvas = new Canvas({ element: canvasRef.current, scale: 2, width: getWidth, height: getHeight, pointerAxis: mousePosition, mouseClick, mouseActive, scrollY });
 
@@ -50,23 +58,46 @@ export const PianoRoll = () => {
             background: activeNote === key ? theme.colors.red[500] : !note.includes('#') ? 'white' : 'black',
             width: noteWidth,
             height: noteHeight,
-            onActive: {
-              background: theme.colors.red[500],
-              return() {
-                updateMIDIGlobalKey(key);
+            ...(!resizeYActive && {
+              onActive: {
+                background: theme.colors.red[500],
+                return() {
+                  playNote(key);
+                },
               },
-            },
+            }),
           };
 
-          const notePianoKeyBorderBottom = {
+          const notePianoKeyActiveHandler: CanvasDrawBoxParams = {
+            ...notePianoKey,
+            x: 0,
+            width: getWidth,
+            background: 'transparent',
+            onHover: {},
+            ...(!noteActive
+              ? {
+                  onActive: {},
+                }
+              : {
+                  onActive: {
+                    ...notePianoKey.onActive,
+                    background: 'transparent',
+                    cursor: 'pointer',
+                  },
+                }),
+          };
+
+          canvas.drawBox(notePianoKey);
+          canvas.drawBox(notePianoKeyActiveHandler);
+
+          const notePianoKeyBorderBottom: CanvasDrawLineParams = {
             x: keysContainerWidth - noteWidth,
             y: octave + height * x - 1,
-            width: noteHeight,
+            width: noteWidth,
             fill: 'black',
             strokeWidth: 1,
           };
 
-          canvas.drawBox(notePianoKey);
           canvas.drawLine(notePianoKeyBorderBottom);
 
           //
@@ -75,7 +106,7 @@ export const PianoRoll = () => {
           const noteAreaEnd = octave + height + (noteHeight + 1) * x - 1 + scrollY;
 
           if (note === 'C' || (mousePosition.y >= noteAreaStart && mousePosition.y <= noteAreaEnd)) {
-            const noteName = {
+            const noteName: CanvasWriteTextParams = {
               x: 5,
               y: octave + height + (noteHeight + 1) * x - 4,
               align: 'left',
@@ -83,25 +114,26 @@ export const PianoRoll = () => {
               value: `${note}${MIDI_NOTES_OCTAVES - i - 2}`,
             };
 
-            const octaveDivisorLine = {
+            const octaveDivisorLine: CanvasDrawLineParams = {
               x: 0,
               y: octave + height + (noteHeight + 1) * x - 1,
-              width: keysContainerWidth - noteHeight,
+              width: keysContainerWidth - noteWidth,
               fill: 'black',
               strokeWidth: 1,
             };
 
-            canvas.writeText(noteName as CanvasWriteTextParams);
+            canvas.writeText(noteName);
             canvas.drawLine(octaveDivisorLine);
           }
         }
       }
 
-      // draw vertical left and right divisors line among keyboard and piano roll
-      const verticalDivisor = {
+      //
+
+      const verticalDivisor: CanvasDrawLineParams = {
         x: keysContainerWidth - noteWidth,
-        y: 0,
-        height: getHeight - scrollY,
+        y: 0 - scrollY,
+        height: getHeight,
         fill: 'black',
         strokeWidth: 1,
       };
@@ -113,8 +145,27 @@ export const PianoRoll = () => {
 
       canvas.drawLine(verticalDivisor);
       canvas.drawLine(rightVerticalDivisor);
+
+      //
+
+      const resizeYBar: CanvasDrawBoxParams = {
+        width: keysContainerWidth - noteWidth,
+        height: getHeight,
+        background: 'transparent',
+        y: 0 - scrollY,
+        ...(!noteActive && {
+          onHover: {
+            cursor: 'ew-resize',
+          },
+          onActive() {
+            setResizeYActive(true);
+          },
+        }),
+      };
+
+      canvas.drawBox(resizeYBar);
     }
-  }, [getHeight, getWidth, mouseActive, mouseClick, mousePosition, activeNote, scrollY, noteHeight, updateMIDIGlobalKey]);
+  }, [getHeight, getWidth, mouseActive, mouseClick, mousePosition, activeNote, scrollY, noteHeight, updateMIDIGlobalKey, noteActive, resizeYActive]);
 
   useEffect(() => {
     if (mouseClick) setMouseClick(false);
@@ -124,21 +175,29 @@ export const PianoRoll = () => {
     const getMousePosition = (e: MouseEvent) => {
       if (canvasRef.current) {
         const { left, top } = canvasRef.current.getBoundingClientRect();
-        setMousePosition({
-          x: e.clientX - left,
-          y: e.clientY - top,
-        });
+
+        const x = e.clientX - left;
+        const y = e.clientY - top;
+
+        setMousePosition({ x, y });
+
+        if (resizeYActive) {
+          const distance = Math.ceil((e.clientX - mouseClickPosition.x) / 5);
+          setNoteHeight(Math.min(Math.max(noteHeight + distance, 8), 40));
+        }
       }
     };
     const element = canvasRef.current;
     element?.addEventListener('mousemove', getMousePosition);
     return () => element?.removeEventListener('mousemove', getMousePosition);
-  }, []);
+  }, [mouseClickPosition.x, resizeYActive]);
 
   useEffect(() => {
     const getMouseClick = (e: MouseEvent) => {
+      const { clientX: x, clientY: y } = e;
       setMouseActive(true);
       setMouseClick(true);
+      setMouseStartPosition({ x, y });
     };
     const element = canvasRef.current;
     element?.addEventListener('mousedown', getMouseClick);
@@ -158,6 +217,8 @@ export const PianoRoll = () => {
     const resetMouseActive = () => {
       removeAllMIDIMessages();
       setMouseActive(false);
+      setResizeYActive(false);
+      setNoteActive(false);
     };
     document.body.addEventListener('mouseup', resetMouseActive);
     return () => document.body.removeEventListener('mouseup', resetMouseActive);

@@ -2,7 +2,6 @@ import { ReactElement } from 'react';
 import { PrimitiveAtom } from 'jotai';
 import { MIDIInputType } from '../store/midi/types';
 import { MerusConfig } from '../devices/Merus/types';
-import Gain from '../web-audio/Gain';
 
 export type ChannelTrackType = 'midi' | 'audio' | 'master';
 

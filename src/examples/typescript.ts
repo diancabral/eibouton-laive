@@ -1,20 +1,24 @@
-const teste = <Type extends {
-  length: number
-}>(param: Type): Type => {
+const teste = <
+  Type extends {
+    length: number;
+  }
+>(
+  param: Type
+): Type => {
   console.log(param.length);
   return param;
-}
+};
 
 teste<string>('a');
 
 const teste2 = <Type, Key extends keyof Type, Thing>(object: Type, key: Key) => {
   return object[key] as unknown as Thing;
-}
+};
 
 type Teste = {
   a: number;
   b: number;
-}
+};
 
 type TesteOptional = Partial<Teste>;
 
@@ -22,16 +26,18 @@ type Teste2<T> = T extends object ? string : T;
 
 teste2<Teste, keyof Teste, Teste2<TesteOptional>>({ a: 1, b: 2 }, 'a');
 
+const validator = <TipoDinamico>(schema: TipoDinamico) => {
+  // codigo da validação
+};
 
+validator<object>({});
+validator<Number>(123);
+validator<String | Boolean>('foo');
 
 /////////////////////////////////////////////////
 
 type CadastrosPossiveis<T> = {
-  [P in keyof T]?:
-    T[P] extends object ? CadastrosPossiveis<T[P]> :
-    T[P] extends boolean ? boolean :
-    T[P] extends number ? number
-  : T[P]
+  [P in keyof T]?: T[P] extends object ? CadastrosPossiveis<T[P]> : T[P] extends boolean ? boolean : T[P] extends number ? number : T[P];
 };
 
 const cadastros = [
@@ -45,9 +51,9 @@ const cadastros = [
       react: true,
       vue: true,
       teste: {
-        foo: 'bar'
-      }
-    }
+        foo: 'bar',
+      },
+    },
   },
   {
     name: 'Karolaynne Siqueira',
@@ -58,25 +64,21 @@ const cadastros = [
       react: true,
       vue: true,
       teste: {
-        foo: 'baz'
-      }
-    }
+        foo: 'baz',
+      },
+    },
   },
-
 ] as const;
 
 const novosUsuarios: CadastrosPossiveis<typeof cadastros> = [
   {
-    idade: 9
+    idade: 9,
   },
-]
+];
 
 console.log(novosUsuarios);
 
 /////////////////////////////////////////////////
-
-
-
 
 type PessoasPossiveis<T> = T[keyof T][];
 const pessoas = ['Dian', 'Karol', 'Chule', 'Dalva', 'Camilo'] as const;
