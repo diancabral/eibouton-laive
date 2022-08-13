@@ -25,12 +25,19 @@ type Axis = { x: number; y: number };
 type Size = { width: number; height: number };
 
 type BoxStyle = {
-  background: CanvasFillStrokeStyles['fillStyle'];
+  background: CanvasFillStrokeStyles['fillStyle'] | boolean;
 };
 
 type LineStyle = {
   strokeWidth: number;
   fill: CanvasFillStrokeStyles['fillStyle'];
+};
+
+type TextStyle = {
+  color: string;
+  font?: string;
+  align: CanvasTextAlign;
+  value: string;
 };
 
 type Listeners = {
@@ -39,30 +46,33 @@ type Listeners = {
   onClick: () => unknown;
 };
 
-type StartLineFromParams = Axis;
-type DrawLineToParams = Axis;
-type DrawBoxParams = Size & Axis & BoxStyle & Partial<Listeners>;
-type DrawLineParams = Partial<Size> & Axis & LineStyle;
+export type CanvasStartLineFromParams = Axis;
+export type CanvasDrawLineToParams = Axis;
+export type CanvasDrawBoxParams = Size & Axis & BoxStyle & Partial<Listeners>;
+export type CanvasDrawLineParams = Partial<Size> & Axis & LineStyle;
+export type CanvasWriteTextParams = Axis & TextStyle;
 
 type CanvasConstructorProps = {
   element: HTMLCanvasElement;
-  scale: number;
+  scale?: number;
   pointerAxis?: Axis;
   mouseClick?: boolean;
   mouseActive?: boolean;
+  scrollY?: number;
 } & Size;
 
 export class Canvas {
   private _element: HTMLCanvasElement;
   private _context: CanvasRenderingContext2D;
-  private _scale: number = 1;
-  private _width: number = 0;
-  private _height: number = 0;
+  private _scale: number;
+  private _width: number;
+  private _height: number;
   private _pointerAxis: Axis;
-  private _mouseClick: boolean = false;
-  private _mouseActive: boolean = false;
+  private _mouseClick: boolean;
+  private _mouseActive: boolean;
+  private _scrollY: number;
 
-  constructor({ element, scale, width, height, pointerAxis = {} as Axis, mouseClick = false, mouseActive = false }: CanvasConstructorProps) {
+  constructor({ element, scale = 1, width = 0, height = 0, pointerAxis = {} as Axis, mouseClick = false, mouseActive = false, scrollY = 0 }: CanvasConstructorProps) {
     this._element = element;
     this._context = this._element.getContext('2d') as CanvasRenderingContext2D;
     this._scale = scale;
@@ -71,6 +81,7 @@ export class Canvas {
     this._pointerAxis = pointerAxis;
     this._mouseClick = mouseClick;
     this._mouseActive = mouseActive;
+    this._scrollY = scrollY;
     this._setCanvasScale();
     this._clearCanvasScreen();
   }
@@ -88,36 +99,40 @@ export class Canvas {
     this._context.fillRect(0, 0, this._width, this._height);
   };
 
-  private _startLineFrom = ({ x, y }: StartLineFromParams) => {
+  private _startLineFrom = ({ x, y }: CanvasStartLineFromParams) => {
     this._context.beginPath();
-    this._context.moveTo(x + 0.5, y + 0.5);
+    this._context.moveTo(x + 0.5, y + 0.5 + this._scrollY);
   };
 
-  private _drawLineTo = ({ x, y }: DrawLineToParams) => {
-    this._context.lineTo(x + 0.5, y + 0.5);
+  private _drawLineTo = ({ x, y }: CanvasDrawLineToParams) => {
+    this._context.lineTo(x + 0.5, y + 0.5 + this._scrollY);
   };
 
-  private _setBoxStyle({ background }: BoxStyle) {
-    this._context.fillStyle = background;
+  private get pointerY() {
+    return this._pointerAxis.y * this._scale;
   }
 
-  drawBox = ({ x, y, width, height, background, onHover, onActive, onClick }: DrawBoxParams) => {
+  private get pointerX() {
+    return this._pointerAxis.x * this._scale;
+  }
+
+  drawBox = ({ x, y, width, height, background, onHover, onActive, onClick }: CanvasDrawBoxParams) => {
     if (!this._context) return false;
 
     const box = new Path2D();
-    box.rect(x, y, width, height);
+    box.rect(x, y + this._scrollY, width, height);
 
-    const isHover = this._context.isPointInPath(box, this._pointerAxis.x * this._scale, this._pointerAxis.y * this._scale);
+    const isHover = this._context.isPointInPath(box, this.pointerX, this.pointerY);
 
-    this._context.fillStyle = background || '';
+    this._context.fillStyle = (background || '') as string;
 
     if (isHover && typeof onHover !== 'function') {
-      if (onHover?.background) this._context.fillStyle = onHover?.background;
+      if (onHover?.background) this._context.fillStyle = onHover?.background as string;
       if (onHover?.return) onHover?.return();
     } else if (isHover && typeof onHover === 'function') onHover();
 
     if (this._mouseActive && isHover && typeof onActive !== 'function') {
-      if (onActive?.background) this._context.fillStyle = onActive?.background;
+      if (onActive?.background) this._context.fillStyle = onActive?.background as string;
       if (onActive?.return) onActive?.return();
     } else if (isHover && typeof onActive === 'function') onActive();
 
@@ -126,7 +141,7 @@ export class Canvas {
     this._context.fill(box);
   };
 
-  drawLine = ({ x, y, strokeWidth, width, height, fill }: DrawLineParams) => {
+  drawLine = ({ x, y, strokeWidth, width, height, fill }: CanvasDrawLineParams) => {
     if (!this._context) return false;
 
     this._startLineFrom({ x, y });
@@ -138,5 +153,13 @@ export class Canvas {
     else if (height) this._drawLineTo({ x, y: y + height || this._height });
 
     this._context.stroke();
+  };
+
+  writeText = ({ x, y, color, align, font = '700 10px Albert Sans', value }: CanvasWriteTextParams) => {
+    if (!this._context) return false;
+    this._context.font = font;
+    this._context.fillStyle = color;
+    this._context.textAlign = align;
+    this._context.fillText(value, x, y + this._scrollY);
   };
 }
