@@ -1,3 +1,4 @@
+import { darken } from 'polished';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MIDI_NOTES_NAMES, MIDI_NOTES_OCTAVES } from '../../../providers/MIDIProvider/consts';
 import { useGetMIDIGlobal } from '../../../store/midi/hooks/useGetMIDIGlobal';
@@ -12,6 +13,13 @@ type Axis = { x: number; y: number };
 
 const keysContainerWidth = 80;
 const noteWidth = 20;
+const headerHeight = 50;
+const background = darken(0.05, theme.colors.grey[700]);
+const clipLength = {
+  bar: 1,
+  beats: 0,
+  sixteents: 0,
+};
 
 export const PianoRoll = () => {
   const { updateMIDIGlobalKey, removeAllMIDIMessages } = useUpdateMIDIGlobal();
@@ -22,7 +30,8 @@ export const PianoRoll = () => {
 
   const [getWidth, setWidth] = useState(0);
   const [getHeight, setHeight] = useState(0);
-  const [noteHeight, setNoteHeight] = useState(20);
+  const [noteHeight, setNoteHeight] = useState(10);
+  const [currentNoteHeight, setCurrentNoteHeight] = useState(noteHeight);
 
   const [mousePosition, setMousePosition] = useState<Axis>({} as Axis);
   const [mouseClickPosition, setMouseStartPosition] = useState<Axis>({} as Axis);
@@ -32,17 +41,31 @@ export const PianoRoll = () => {
   const [resizeYActive, setResizeYActive] = useState(false);
   const [noteActive, setNoteActive] = useState(false);
 
-  const maxScroll = useMemo(() => MIDI_NOTES_OCTAVES * ((noteHeight + 1) * 12) - getHeight, [getHeight, noteHeight]);
+  const maxScroll = useMemo(() => headerHeight + MIDI_NOTES_OCTAVES * ((noteHeight + 1) * 12) - getHeight, [getHeight, noteHeight]);
   const activeNote = useMemo(() => (getMIDINotesOn.slice(-1)[0] || []).key, [getMIDINotesOn]);
 
   useEffect(() => {
     const playNote = (key: number) => {
       updateMIDIGlobalKey(key);
-      setNoteActive(true);
+      if (!noteActive) setNoteActive(true);
     };
 
     if (canvasRef.current) {
       const canvas = new Canvas({ element: canvasRef.current, scale: 2, width: getWidth, height: getHeight, pointerAxis: mousePosition, mouseClick, mouseActive, scrollY });
+
+      //
+
+      const headerArea: CanvasDrawBoxParams = {
+        width: getWidth,
+        height: headerHeight,
+        background: 'transparent',
+        y: 0 - scrollY,
+        onActive: {
+          stopPropagation: true,
+        },
+      };
+
+      canvas.drawBox(headerArea);
 
       for (let i = 0; i < MIDI_NOTES_OCTAVES; i++) {
         const octave = MIDI_NOTES_NAMES.length * (noteHeight + 1) * i;
@@ -54,7 +77,7 @@ export const PianoRoll = () => {
 
           const notePianoKey = {
             x: keysContainerWidth - noteWidth,
-            y: octave + height * x,
+            y: headerHeight + octave + height * x,
             background: activeNote === key ? theme.colors.red[500] : !note.includes('#') ? 'white' : 'black',
             width: noteWidth,
             height: noteHeight,
@@ -87,12 +110,22 @@ export const PianoRoll = () => {
                 }),
           };
 
+          const notePianoKeyGhost: CanvasDrawBoxParams = {
+            ...notePianoKey,
+            x: keysContainerWidth,
+            width: getWidth,
+            background: !note.includes('#') ? background : darken(0.1, theme.colors.grey[700]),
+            onHover: {},
+            onActive: {},
+          };
+
+          canvas.drawBox(notePianoKeyGhost);
           canvas.drawBox(notePianoKey);
           canvas.drawBox(notePianoKeyActiveHandler);
 
           const notePianoKeyBorderBottom: CanvasDrawLineParams = {
             x: keysContainerWidth - noteWidth,
-            y: octave + height * x - 1,
+            y: headerHeight + octave + height * x - 1,
             width: noteWidth,
             fill: 'black',
             strokeWidth: 1,
@@ -102,13 +135,13 @@ export const PianoRoll = () => {
 
           //
 
-          const noteAreaStart = octave + height * x + scrollY;
-          const noteAreaEnd = octave + height + (noteHeight + 1) * x - 1 + scrollY;
+          const noteAreaStart = headerHeight + octave + height * x + scrollY;
+          const noteAreaEnd = headerHeight + octave + height + (noteHeight + 1) * x - 1 + scrollY;
 
           if (note === 'C' || (mousePosition.y >= noteAreaStart && mousePosition.y <= noteAreaEnd)) {
             const noteName: CanvasWriteTextParams = {
               x: 5,
-              y: octave + height + (noteHeight + 1) * x - 4,
+              y: headerHeight + octave + height + (noteHeight + 1) * x - 4,
               align: 'left',
               color: 'white',
               value: `${note}${MIDI_NOTES_OCTAVES - i - 2}`,
@@ -116,7 +149,7 @@ export const PianoRoll = () => {
 
             const octaveDivisorLine: CanvasDrawLineParams = {
               x: 0,
-              y: octave + height + (noteHeight + 1) * x - 1,
+              y: headerHeight + octave + height + (noteHeight + 1) * x - 1,
               width: keysContainerWidth - noteWidth,
               fill: 'black',
               strokeWidth: 1,
@@ -132,7 +165,7 @@ export const PianoRoll = () => {
 
       const verticalDivisor: CanvasDrawLineParams = {
         x: keysContainerWidth - noteWidth,
-        y: 0 - scrollY,
+        y: headerHeight - scrollY,
         height: getHeight,
         fill: 'black',
         strokeWidth: 1,
@@ -152,20 +185,31 @@ export const PianoRoll = () => {
         width: keysContainerWidth - noteWidth,
         height: getHeight,
         background: 'transparent',
-        y: 0 - scrollY,
+        y: headerHeight - scrollY,
         ...(!noteActive && {
           onHover: {
             cursor: 'ew-resize',
           },
           onActive() {
-            setResizeYActive(true);
+            if (!currentNoteHeight) setCurrentNoteHeight(noteHeight);
+            if (!resizeYActive) setResizeYActive(true);
           },
         }),
       };
 
       canvas.drawBox(resizeYBar);
+
+      //
+
+      const header: CanvasDrawBoxParams = {
+        ...headerArea,
+        background,
+        onActive: {},
+      };
+
+      canvas.drawBox(header);
     }
-  }, [getHeight, getWidth, mouseActive, mouseClick, mousePosition, activeNote, scrollY, noteHeight, updateMIDIGlobalKey, noteActive, resizeYActive]);
+  }, [getHeight, getWidth, mouseActive, mouseClick, mousePosition, activeNote, scrollY, noteHeight, updateMIDIGlobalKey, noteActive, resizeYActive, currentNoteHeight]);
 
   useEffect(() => {
     if (mouseClick) setMouseClick(false);
@@ -183,14 +227,14 @@ export const PianoRoll = () => {
 
         if (resizeYActive) {
           const distance = Math.ceil((e.clientX - mouseClickPosition.x) / 5);
-          setNoteHeight(Math.min(Math.max(noteHeight + distance, 8), 40));
+          setNoteHeight(Math.min(Math.max(currentNoteHeight + distance, 8), 40));
         }
       }
     };
     const element = canvasRef.current;
     element?.addEventListener('mousemove', getMousePosition);
     return () => element?.removeEventListener('mousemove', getMousePosition);
-  }, [mouseClickPosition.x, resizeYActive]);
+  }, [currentNoteHeight, mouseClickPosition.x, resizeYActive]);
 
   useEffect(() => {
     const getMouseClick = (e: MouseEvent) => {
@@ -219,6 +263,7 @@ export const PianoRoll = () => {
       setMouseActive(false);
       setResizeYActive(false);
       setNoteActive(false);
+      setCurrentNoteHeight(0);
     };
     document.body.addEventListener('mouseup', resetMouseActive);
     return () => document.body.removeEventListener('mouseup', resetMouseActive);

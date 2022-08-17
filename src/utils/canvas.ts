@@ -43,9 +43,13 @@ type TextStyle = {
   value: string;
 };
 
+type EventControl = {
+  stopPropagation?: boolean;
+};
+
 type Listeners = {
-  onHover: (Partial<BoxStyle> & { return?: () => unknown }) | (() => unknown);
-  onActive: (Partial<BoxStyle> & { return?: () => unknown }) | (() => unknown);
+  onHover: (EventControl & Partial<BoxStyle> & { return?: () => unknown }) | (() => unknown);
+  onActive: (EventControl & Partial<BoxStyle> & { return?: () => unknown }) | (() => unknown);
   onBlur: () => unknown;
   onClick: () => unknown;
 };
@@ -147,6 +151,7 @@ export class Canvas {
     }
 
     if (this._mouseActive && isHover && typeof onActive !== 'function') {
+      if (onActive?.stopPropagation) this._mouseActive = false;
       if (onActive?.background) this._context.fillStyle = onActive?.background as string;
       if (onActive?.return) onActive?.return();
     } else if (this._mouseActive && isHover && typeof onActive === 'function') onActive();
@@ -154,6 +159,8 @@ export class Canvas {
     if (this._mouseClick && isHover && typeof onClick === 'function') onClick();
 
     this._context.fill(box);
+
+    console.log(this._mouseActive);
   };
 
   drawLine = ({ x = 0, y = 0, strokeWidth, width, height, fill }: CanvasDrawLineParams) => {
